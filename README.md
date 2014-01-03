@@ -2,8 +2,7 @@ eMafiaServer
 ============
 Requirements to run
 
-MySql
-Java 7
+MySql 5.1 and Java 7
 
 The required database entries are provided within mafia.sql
 
