@@ -1,4 +1,4 @@
-package com.inverseinnovations.eMafiaServer.includes;
+package libraries;
 
 // Copyright (c) 2006 Damien Miller <djm@mindrot.org>
 //

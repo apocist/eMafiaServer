@@ -7,6 +7,8 @@ package com.inverseinnovations.eMafiaServer.includes.classes.Server;
 import java.sql.*;
 import java.util.*;
 
+import libraries.BCrypt;
+
 import org.apache.commons.lang3.StringUtils;
 import com.inverseinnovations.eMafiaServer.*;
 import com.inverseinnovations.eMafiaServer.includes.*;
