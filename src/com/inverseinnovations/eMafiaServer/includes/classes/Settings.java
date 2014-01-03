@@ -60,7 +60,7 @@ public class Settings {
 				writer.println("SERVER_PORT=		1234");//1234 is dev server - 3689 is public server(Apo normally keeps public server up and running)
 				writer.println("SERVER_ADDRESS=	localhost");
 				writer.println("SERVER_MAX_CLIENTS=	256");
-				writer.println("CLIENT_BUILD=		5");//Used for Client update control
+				writer.println("CLIENT_BUILD=		1");//Used for Client update control
 				writer.println();
 				writer.println("# Connection timeout for activity-less connections (in seconds)");
 				writer.println("CONN_TIMEOUT=		1200");
