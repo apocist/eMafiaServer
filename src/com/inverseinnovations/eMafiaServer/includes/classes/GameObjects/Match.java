@@ -2,9 +2,8 @@
 GNU GENERAL PUBLIC LICENSE V3
 Copyright (C) 2012  Matthew 'Apocist' Davis */
 package com.inverseinnovations.eMafiaServer.includes.classes.GameObjects;
-//FIXME players quitting from match are not removed
-//FIXME refresh needs to refresh the votes/targeting to reappear client-side as well
-//
+//FIXME refresh needs to refresh the votes/targeting to reappear client-side as well(was this done already?)
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +27,6 @@ import com.inverseinnovations.eMafiaServer.includes.classes.ERS.MatchERS;
 public class Match extends GameObject{
 	public Game Game;
 	private MatchERS matchERS = null;
-	//private Map<Integer, Character> characters = Collections.synchronizedMap(new LinkedHashMap<Integer, Character>());
 	private Map<Integer, Character> characters = Collections.synchronizedMap(new ConcurrentHashMap <Integer, Character>());
 	private Map<String, Integer> settings = new LinkedHashMap<String, Integer>();
 	private Timer timer;
@@ -59,8 +57,6 @@ public class Match extends GameObject{
 ///////////////////////
 ///////CONSTANTS///////
 ///////////////////////
-
-
 	/** Creates a new Match with default settings*/
 	public Match(Game game, String name){
 		super(0, name, Constants.TYPE_GAMEOB_MATCH);
@@ -70,7 +66,6 @@ public class Match extends GameObject{
 			if (!gameMatches.containsKey(i)){this.setEID(i);break;}
 		}
 		Game.addMatch(this);
-
 
 		this.settings.put("host_id", 0);
 		this.settings.put("max_chars", 4);//the max num of chars for a game, 15 defualt
@@ -93,7 +88,7 @@ public class Match extends GameObject{
 		this.settings.put("last_will", 0);//0=no/1=show last will
 		this.settings.put("description", 1);//0=night seq/1=death desc/2=classic night
 
-		//TODO add action categorys for default
+		//add action categorys for default
 		String[] actionsToAdd = new String[]{"Jail","Vest","Witch","Busdrive","Roleblock","Frame","Douse","Heal","Kill","Clean","Invest","Disguise","Recruit"};
 		for(String action: actionsToAdd){
 			addActionCategory(action);
@@ -129,6 +124,7 @@ public class Match extends GameObject{
 		}
 		else return null;
 	}
+	/**Returns the match chatController*/
 	public ChatGroup chatController(){
 		return chatGroup;
 	}
@@ -136,34 +132,34 @@ public class Match extends GameObject{
 ////////Characters////////
 //////////////////////////
 	/**
-	 * Character object is added to the room
-	 * @param chara Char_object
+	 * Character is added to the room
+	 * @param chara Character
 	 */
- 	public void addCharacter(Character chara){//putting whole character reference in array instead of just name now
+ 	public void addCharacter(Character chara){
 		this.characters.put(chara.getEID(), chara);
 		this.send(CmdCompile.playerEnter(chara),chara);
 		if(getHostId() == 0){//if there is no host
-			if(chara.getType() != Constants.TYPE_GAMEOB_NPC){//NPC couldn't be host)
+			if(chara.getType() != Constants.TYPE_GAMEOB_NPC){//NPC couldn't be host
 				setHost(chara);
 			}
 		}
 	}
 	/**
-	 * Character object is removed from the room
-	 * @param chara Char_object
+	 * Character is removed from the room
+	 * @param chara Character
 	 */
 	public void removeCharacter(Character chara){
 		this.characters.remove(chara.getEID());
 		this.send(CmdCompile.playerLeave(chara),chara);
 	}
-	/**Returns character in match based on EID
-	 * @return Character
+	/**
+	 * Returns character in match based on EID
 	 */
 	public Character getCharacter(int eid){
 		return this.characters.get(eid);
 	}
 	/**
-	 * @return Returns Map of all Characters in the match
+	 * Returns Map of all Characters in the match
 	 */
 	public Map<Integer, Character> getCharacters(){
 		return this.characters;
@@ -762,6 +758,11 @@ public class Match extends GameObject{
 			}
 		}
 	}
+	/**
+	 * Passes 'chat' through the chatController for inplay speaking
+	 * @param fromPlayerNum the speaking players number
+	 * @param message the player is saying
+	 */
 	public void chatter(int fromPlayerNum, String message){//TODO expand ChatChannels greatly
 		if(getPhaseMain() == Constants.PHASEMAIN_INPLAY && fromPlayerNum != 0){//as long as in play
 			//cycle through each of his channels
@@ -810,41 +811,13 @@ public class Match extends GameObject{
 	}
 	/** Returns number of votes required for democracy to kick in */
  	public int requiredVotes(){
-		//create the required majority vote
-		//$required = round(count($this->alive)/2, 0, PHP_ROUND_HALF_UP);
+ 		//XXX is thought majority vote was 50+%...FM is saying 51+%?
 		int required = (int) Math.ceil(getNumPlayersAlive() / 2);
 		if(required == (getNumPlayersAlive() / 2)){
 			required++;
 		}
 		return required;
 	}
-	/** Resort the order that night actions take place*/
-	/*public void resortActionOrder(){
-		List<Role> roleList = new ArrayList<Role>();
-		for(Role r : roles){
-			roleList.add(r);
-		}
-		Collections.sort(roleList,new Comparator<Role>(){//sort the actionorders
-			@Override
-			public int compare(Role o1, Role o2) {
-				if(o1 != null && o2 != null){
-					if (o1.getActionOrder() >= o2.getActionOrder() ){
-						return 1;
-					}
-					else return -1;
-				}
-				else return 0;
-			}
-		});
-		rolesActionOrder.clear();
-		int loop = 0;
-		for(Role r : roleList){
-			if(r != null){
-				rolesActionOrder.put(loop, getPlayer(r.getPlayerNum()).getRoleNumber());
-				loop++;
-			}
-		}
-	}*/
 	/**Performs standard scriptProcess for the specified onEvent for all players by order of rolesActionOrder (Script, Role)
 	 * @param event onEventScript
 	 */
@@ -1318,9 +1291,6 @@ public class Match extends GameObject{
 		Random rand = new Random();//makes new random number
 		if(noError){
 			for (int i = 1; i <= getNumChars(); i++){
-					//to be replaced
-					//$this->rolesOrig[$i] = array("TOWN","CORE");
-					//end replace
 				RolesOrig origRole = roleSetup.get(i-1);
 				//TODO need ot check for id now
 				if(origRole.eID > 0){//if a role id...grab the single id instead of category
@@ -1330,14 +1300,9 @@ public class Match extends GameObject{
 					else{origRole.roleName = roles[i].getName();}
 				}
 				else{//grab category
-					//$this->roles[$i] = array("DEFAULT",$this->rolesOrig[$i][0],$this->rolesOrig[$i][1]);
-						//$list = dbHandler::GrabRoleCatList($this->roles[$i][0],$this->roles[$i][1],$this->roles[$i][2]);
 					Map<Integer, Integer> list = Game.Base.MySql.grabRoleCatList("DEFAULT",origRole.affiliation,origRole.category[0]);
 					if(list.size() == 0){send(CmdCompile.chatScreen("Could not retrieve a role from selected role category list("+origRole.affiliation+" "+origRole.category[0]+"), Start Cancelled"));noError=false;break;}
 					else{
-						//$list2 = array_rand($list);
-						//rand = new Random();//makes new random number
-						//$this->roles[$i] = dbHandler::GrabRole($list2);
 						int randNum = rand.nextInt(list.size());
 						Game.Base.Console.debug("getting random number: "+randNum);
 						Role role;
@@ -1346,7 +1311,6 @@ public class Match extends GameObject{
 
 							roles[i] = role;
 							roles[i].setMatch(this);
-
 						}
 						else{//if error grabbing role
 							Game.Base.Console.warning("Error grabbing random role "+randNum);
@@ -1595,6 +1559,7 @@ public class Match extends GameObject{
 		this.send(CmdCompile.chatScreen("(Lynch)"+getPlayer(trialplayer).getName()+" has been lynched by the Town!"));
 		this.send(CmdCompile.chatScreen("(Lynch)"+getPlayer(trialplayer).getName()+"'s role was "+getPlayerRole(trialplayer).getName()));
 	}
+	/** Mode displays the winning teams and players as well as their roles. Adds timer to kill match after certain time*/
 	private void beginGameEnd(){
 		//TODO remove vote/target buttons
 		//Check victoryConditctions for all players
@@ -1692,7 +1657,8 @@ public class Match extends GameObject{
 		public String roleName;
 		//public Map options;
 	}
-	/** Dataholder containing chat channels in game */
+	/** Dataholder containing chat channels in game<br>
+	 * Controls permission of each channel and who is speaking to who. */
 	public class ChatGroup{
 		private Map<Integer, ChatChannel> channels = new LinkedHashMap<Integer, ChatChannel>();//<channelNum, ChatChannel settings>
 		private Map<Integer, PlayerChannels> players = new LinkedHashMap<Integer, PlayerChannels>();//<playerNum, PlayerChannel list>
@@ -1769,6 +1735,8 @@ public class Match extends GameObject{
 		 * @param listenRights 0-none 1-normal 2-anonymous(can't see anyone's name)(unimplemented)
 		 */
 		public void addPlayerToChannel(int playerNum, String chanName, int talkRights, int listenRights){
+			//TODO need function to allow player to speak anonymously
+			//TODO need function for player not to see other speakers names
 			if(players.containsKey(playerNum)){
 				for(ChatChannel channel : channels.values()){
 					if(channel.channelName.equals(chanName)){
@@ -1889,6 +1857,7 @@ public class Match extends GameObject{
 		}
 	}
 
+	/** Returns ERS Class for scripting support */
 	public MatchERS getERSClass(){
 		if(this.matchERS == null){
 			this.matchERS = new MatchERS(this);
@@ -1899,6 +1868,7 @@ public class Match extends GameObject{
 //////////////////////////
 //////////Timer///////////
 //////////////////////////
+	//XXX Should this be one whole class?
 	/** Does a Timer currently exist?
 	 * @return True/False
 	 */
