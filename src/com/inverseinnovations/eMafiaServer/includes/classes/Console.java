@@ -3,7 +3,6 @@ GNU GENERAL PUBLIC LICENSE V3
 Copyright (C) 2012  Matthew 'Apocist' Davis */
 package com.inverseinnovations.eMafiaServer.includes.classes;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.Color;
