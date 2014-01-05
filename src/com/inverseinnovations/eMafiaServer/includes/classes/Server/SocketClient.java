@@ -33,12 +33,21 @@ public class SocketClient extends Thread{
 	private int characterEID;
 	private long lastInput = 0;//detrimine idleness
 
+	/**
+	 * Creates Client to allow sending and retrieving infomation
+	 * @param server
+	 * @param id
+	 * @param socket
+	 */
 	public SocketClient(SocketServer server, int id, Socket socket){
 		this.clientEID = id;
 		this.socket = socket;
 		this.Server = server;
 		this.setName("Client "+id+" Socket "+socket);
 	}
+	/**
+	 * Sets the Client to continue reading
+	 */
 	public void run(){
 		String line , input = "";
 
@@ -82,16 +91,28 @@ public class SocketClient extends Thread{
 			//Server.Base.Console.printStackTrace(e);
 		}
 	}
+	/**
+	 * Returns the Client ID
+	 */
 	public int getClientEID(){
 		return this.clientEID;
 	}
+	/**
+	 * Set the Character ID in which the client is attached to
+	 */
 	public void setCharEID(int eid){
 		this.characterEID = eid;
 		this.ONLINE = true;
 	}
+	/**
+	 * Returns the Character ID in which the client is attached to
+	 */
 	public int getCharEID(){
 		return this.characterEID;
 	}
+	/**
+	 * Returns the IP address of the Client
+	 */
 	public String getIPAddress(){
 		return this.ipAddress;
 	}
@@ -106,6 +127,9 @@ public class SocketClient extends Thread{
 	public void input(String input){//test
 		//Server.testOut(id, input);
 	}
+	/**
+	 * Send DataPacket to client
+	 */
 	public void send(byte[] output){
 		try {
 			if(socket.isConnected()){
@@ -117,6 +141,9 @@ public class SocketClient extends Thread{
 			Server.Base.Console.warning(e.getMessage()+" on SocketClient(send) "+clientEID);
 		}
 	}
+	/**
+	 * Sets Client as offline and removes Character from Game
+	 */
 	public void offline(){
 		if(ONLINE){
 			if(this.getCharEID()>0){//FIXME more work on the closing process
@@ -134,7 +161,7 @@ public class SocketClient extends Thread{
 					else{
 						me.getLobby().removeCharacter(me);
 					}
-					Server.Base.Console.fine(me.getName()+"...quit..bastard!");
+					Server.Base.Console.fine(me.getName()+"...quit!");
 					Server.Base.Game.removeCharacter(me);//XXX should not remove if character is left in the playing match
 				}
 			}
@@ -143,6 +170,9 @@ public class SocketClient extends Thread{
 		RUNNING = false;
 		//this.close();
 	}
+	/**
+	 * Closes the Client connection
+	 */
 	public void close(){
 		try {
 			send(CmdCompile.disconnect());

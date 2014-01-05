@@ -149,7 +149,7 @@ public class SocketServer {
 		}
 	}
 	/**
-	 * Either prepares input for commands or for logging in
+	 * Either prepares input for commands or for logging in based on state
 	 * @param cObj Client Connection(SocketClient)
 	 * @param cdata Client command statement
 	 */
@@ -169,39 +169,42 @@ public class SocketServer {
 			com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Character c = Base.Game.getCharacter(cObj.getCharEID());
 			if (c==null) return;
 
-			//if($c->playerstate == 0){//if player is in a normal state
-				if (fsplit[0].trim() == ""){
-					//c.send("Do nothing on your own time...");
-					return;
+			if (!fsplit[0].trim().equals("")){
+				if(fsplit.length == 1){
+					CmdHandler.processCmd(c,fsplit[0],null);
 				}
 				else{
-					//cmdHandler::processCmd($c->getEID(),$command,$data,$cObject->isJava());
-					if(fsplit.length == 1){
-						CmdHandler.processCmd(c,fsplit[0],null);
-					}
-					else{
-						CmdHandler.processCmd(c,fsplit[0],fsplit[1]);
-					}
-					return;
+					CmdHandler.processCmd(c,fsplit[0],fsplit[1]);
 				}
-			/*}
-			else if($c->playerstate == 1){//if player is in a writing buffer
-				writeHandler::whereTo($c,$cdata);
-				return true;
 			}
-			else{return;}*/
+			return;
 		}
 	}
+	/**
+	 * Returns the Client based on id
+	 * @return null if nonexistant
+	 */
 	public SocketClient getClient(int id){
 		if (this.clients.containsKey(id)){return this.clients.get(id);}
-		else{return null;}
+		return null;
 	}
+	/**
+	 * Returns Map of all Clients
+	 */
 	public Map<Integer, SocketClient> getClients(){
 		return this.clients;
 	}
+	/**
+	 * Sets the Client to the Server
+	 * @param id Client id
+	 * @param cObj Client
+	 */
 	public void setClient(int id, SocketClient cObj){
 		this.clients.put(id, cObj);
 	}
+	/**
+	 * Removes the Client from the Server
+	 */
 	public void removeClient(int id){
 		this.clients.remove(id);
 	}

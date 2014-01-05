@@ -1004,6 +1004,7 @@ public class Match extends GameObject{
 		//getRole(this.graveyard[nextSlot].getRoleNumber()).deathTypes.add(deathType);
 		this.players[playerNum] = null;
 	}
+	/** Sends player to graveyard */
 	public void killPlayer(Role role){
 		if(role != null){
 			killPlayer(role.getPlayerNum());
@@ -1041,6 +1042,11 @@ public class Match extends GameObject{
 		}
 		return theReturn;
 	}
+	/**
+	 * Temporarly diverts all visits/script actions against playerNum to another instead
+	 * @param playerFrom Player diverting From
+	 * @param playerTo Player diverting To
+	 */
 	public void setSwitchedPlayerNum(int playerFrom, int playerTo){
 		playerNumSwitch.put(playerFrom, playerTo);
 	}
