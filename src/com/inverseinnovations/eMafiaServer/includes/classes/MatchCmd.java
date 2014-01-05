@@ -17,7 +17,10 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Match;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Role;
 import com.inverseinnovations.eMafiaServer.includes.classes.Server.SocketClient;
 
-
+/**
+ * Provides list of all commands a Character may call when inside a Match<br>
+ * All method names must be appended to CMDLIST[] to be callable
+ */
 public class MatchCmd {
 	public static String[] CMDLIST = {
 		//basic commands
