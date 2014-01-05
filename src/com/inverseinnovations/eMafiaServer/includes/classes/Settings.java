@@ -3,7 +3,6 @@ GNU GENERAL PUBLIC LICENSE V3
 Copyright (C) 2012  Matthew 'Apocist' Davis */
 package com.inverseinnovations.eMafiaServer.includes.classes;
 
-
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.util.Properties;
@@ -17,7 +16,7 @@ public class Settings {
 	boolean loadError = false;
 
 	// Server config variables
-	//public static final String SERVER_HOST = "192.168.1.3";//Keep in mind that on a live host, you'll want to bind to the outbound IP or host name, not localhost or 127.0.0.1, etc.
+	//Keep in mind that on a live host, you'll want to bind to the outbound IP or host name, not localhost or 127.0.0.1, etc. 0 should work just fine
 	public String SERVER_HOST;
 	public int SERVER_PORT;
 	public String SERVER_ADDRESS;//default is "localhost"
@@ -28,8 +27,6 @@ public class Settings {
 	public int CONN_TIMEOUT;
 
 	//MySql Config
-	//public static final String MYSQL_URL = "jdbc:mysql://192.168.1.80:3306/mafiamud";
-	//public static final String MYSQL_URL = "jdbc:mysql://www.hikaritemple.com:3306/mafiamud";
 	public String MYSQL_URL;
 	public String MYSQL_USER;
 	public String MYSQL_PASS;

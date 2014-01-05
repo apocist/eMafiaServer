@@ -81,7 +81,8 @@ public class Flag extends GameObject{
 		}
 		return theReturn;
 	}
-	public boolean isScripte(){
+	/**If this flag has any scripts*/
+	public boolean isScripted(){
 		boolean theReturn = false;
 		if(this.isScriptedPre()){
 			theReturn = true;
