@@ -7,11 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Character;
 
-
 public class CmdHandler {
-
 	/**
-	 * Performs command based on location the character is at(match or lobby),
+	 * Performs commands based on location the character is at(match or lobby),
 	 * and detrimines whether the command even exists or not.
 	 * @param c Character doing the command
 	 * @param command The snytax

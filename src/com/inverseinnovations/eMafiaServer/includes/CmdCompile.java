@@ -21,6 +21,9 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Match.Pl
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Match.RolesOrig;
 
 
+/**
+ * Class handler for returning bytes read as DataPackets in the eMafiaClient
+ */
 public class CmdCompile {
 	/*List of layers currently in client:
 	 * lobby
@@ -305,7 +308,6 @@ public class CmdCompile {
 
 	//-Other-//
 
-
 	private static byte[] cmdCompiler(int control,int num){
 		return cmdCompiler(control,""+num);
 	}
@@ -338,7 +340,6 @@ public class CmdCompile {
 
 		return array.toByteArray();
 	}
-
 	private static byte[] cmdCompiler(int control,Object object){
 		//control
 		byte[] controlBytes = new byte[2];
@@ -369,39 +370,50 @@ public class CmdCompile {
 		return array.toByteArray();
 	}
 
-
+	/**
+	 * Wrapper class to provide ease of converting Strings, ints, and bytes
+	 * into a series of bytes.
+	 */
 	public static class ByteArrayList extends ArrayList<Byte>{
 		private static final long serialVersionUID = 1L;
-
+		/**
+		 * Wrapper class to provide ease of converting Strings, ints, and bytes
+		 * into a series of bytes.
+		 */
 		public ByteArrayList(){
 			super();
 		}
-
+		/**
+		 * Wrapper class to provide ease of converting Strings, ints, and bytes
+		 * into a series of bytes.
+		 */
 		public ByteArrayList(byte[] byteArray){
 			super();
 			for(byte b : byteArray){
 				this.add(b);
 			}
 		}
-
+		/**Appends a series of bytes*/
 		public void append(byte[] byteArray){
 			for(byte b : byteArray){
 				this.add(b);
 			}
 		}
-
+		/**Appends a ByteArrayList*/
 		public void append(ByteArrayList arrayList){
 			for(byte b : arrayList){
 				this.add(b);
 			}
 		}
+		/**Appends an int*/
 		public void append(int i){
 			append(BigInteger.valueOf(i).toByteArray());
 		}
+		/**Appends a String*/
 		public void append(String i){
 			append(String.valueOf(i).getBytes());
 		}
-
+		/**Converts the ByteArrayList into byte[]*/
 		public byte[] toByteArray(){
 			byte[] byteArray = new byte[this.size()];
 			for(int i = 0; i<this.size(); i++){
@@ -410,6 +422,11 @@ public class CmdCompile {
 			return byteArray;
 		}
 	}
+	/**
+	 * Converts an Object to byte[]
+	 * @param object Object to Convert to byte[]
+	 * @return null on IOException
+	 */
 	public static byte[] objectToByte(Object object){
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutput out = null;

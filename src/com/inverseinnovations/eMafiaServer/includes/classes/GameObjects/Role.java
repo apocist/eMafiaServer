@@ -12,15 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.inverseinnovations.eMafiaServer.includes.scriptProcess;
 import com.inverseinnovations.eMafiaServer.includes.classes.ERS.RoleERS;
 
-
 public class Role extends GameObject{
 	public Match Match;
-	//private id;
 	//Static Variables from Database
 	private int version;
 	private String affiliation;
 	private String[] category;// = array();
-	//private int actionOrder = 100;//last by default
 	private String actionCat;
 	//private int numPossibleNightTargets;//targets 0-2 for nightaction(how many buttons should appear if any)
 	//private int numPossibleDayTargets;//targets 0-2 for dayaction(how many buttons should appear if any)
@@ -55,72 +52,127 @@ public class Role extends GameObject{
 	private Map<String, Boolean> customVarBoolean = new LinkedHashMap<String, Boolean>();
 	private Map<String, String> ersScript = new LinkedHashMap<String, String>();
 
+ 	/**
+ 	 * Creates Role for use in a match
+ 	 * @param match Match reference that role is partcipating in
+ 	 * @param eid
+ 	 * @param name Name o fRole
+ 	 * @param type Default of Custom Role
+ 	 * @param affiliation
+ 	 * @param category 2 possible categories
+ 	 */
  	public Role(final Match match, int eid, String name, int type, String affiliation, String[] category){
 		super(eid, name, type);
 		this.Match = match;
 		this.affiliation = affiliation;
 		this.category = category;
 	}
-
-	public void setMatch(Match match){
+	/**
+	 * Set the Match reference at a later point
+	 */
+	public void setMatch(final Match match){
 		this.Match = match;
 	}
+	/**
+	 * Returns the Match reference
+	 */
 	public Match getMatch(){
 		return this.Match;
 	}
+	/**
+	 * Returns the database version of the role
+	 */
 	public int getVersion(){
 		return version;
 	}
+	/**
+	 * Sets the database version of the role
+	 */
 	public void setVersion(int version){
 		this.version = version;
 	}
+	/**
+	 * Returns the affilation of the Role
+	 */
 	public String getAffiliation(){
 		return this.affiliation;
 	}
-
+	/**
+	 * Returns the categories of the Role
+	 */
 	public String[] getCategory(){
 		return this.category;
 	}
-	/*public int getActionOrder(){
-		return actionOrder;
-	}
-	public void setActionOrder(int order){
-		this.actionOrder = order;
-	}*/
+	/**
+	 * Returns the Action Category, aka the order of operations
+	 */
 	public String getActionCat(){
 		return actionCat;
 	}
+	/**
+	 * Sets the action category, aka the order of operations
+	 */
 	public void setActionCat(String cat){
 		this.actionCat = cat;
 	}
+ 	/**
+ 	 * Sets the inplay player number
+ 	 */
  	public void setPlayerNum(int num){
 		this.playernum = num;
 	}
+	/**
+	 * Returns the inplay player number
+	 */
 	public int getPlayerNum(){
 		return this.playernum;
 	}
+	/**
+	 * Returns the inplay player health
+	 */
 	public int getHp(){
 		return this.hp;
 	}
+	/**
+	 * Sets the inplay player health, 0 will kill the player/role
+	 */
 	public void setHp(int value){
 		this.hp = value;
 		if(this.hp <= 0){setIsAlive(false);}
 	}
+	/**
+	 * Returns a Map of all Flags attached to this Role
+	 */
 	public Map<String, Flag> getFlags(){
 		return flags;
 	}
+ 	/**
+ 	 * Attaches a Flag to this Role
+ 	 */
  	public void addFlag(Flag flag){
 		flags.put(flag.getName(), flag);
 	}
+	/**
+	 * Creates and attaches a Flag to this Role with the name
+	 * @param name name of Flag to create
+	 */
 	public void addFlag(String name){
 		Flag flag = new Flag(name);
 		flags.put(flag.getName(), flag);
 	}
+	/**
+	 * Removes the attached attached to this Role by the name of
+	 */
 	public void removeFlag(String name){
 		if(flags.containsKey(name)){
 			flags.remove(name);
 		}
 	}
+	/**
+	 * Returns a Flag attached to this Role by name of
+	 * @param name name of Flag
+	 * @return null if nonexistant
+	 */
 	public Flag getFlag(String name){
 		Flag theReturn = null;
 		if(flags.containsKey(name)){
@@ -128,6 +180,10 @@ public class Role extends GameObject{
 		}
 		return theReturn;
 	}
+	/**
+	 * Checks whether Role has specified Flag or not
+	 * @param name name of Flag
+	 */
 	public boolean hasFlag(String name){
 		boolean theReturn = false;
 		if(flags.containsKey(name)){
@@ -135,12 +191,15 @@ public class Role extends GameObject{
 		}
 		return theReturn;
 	}
+	/**
+	 * Returns a Map of all normal(non Flag) scripts of the Role
+	 */
 	public Map<String, String> getScriptMap(){
 		return ersScript;
 	}
 	/**Returns the requested script for the specified event. Returns null if no existing event or script.
-	 * @param eventCall
-	 * @return ERS Script
+	 * @param eventCall name of script
+	 * @return script to process
 	 */
 	public String getScript(String eventCall){
 		String theReturn = null;
@@ -152,8 +211,8 @@ public class Role extends GameObject{
 		return theReturn;
 	}
 	/**Saves an ERS Script for the specified event
-	 * @param eventCall
-	 * @param script
+	 * @param eventCall name of script
+	 * @param script script to save
 	 */
 	public void setScript(String eventCall, String script){
 		if(StringUtils.isNotEmpty(eventCall)){
@@ -258,15 +317,29 @@ public class Role extends GameObject{
 			}
 		}
 	}
+	/**
+	 * Sets the target1 for this Role to visit
+	 */
 	public void setTarget1(int target){
 		this.target1 = target;
 	}
+	/**
+	 * Returns the target1 that this Role is goin got visit<br>
+	 * 0 generally means that target is none
+	 */
 	public int getTarget1(){
 		return target1;
 	}
+	/**
+	 * Sets the target2 for this Role to visit
+	 */
 	public void setTarget2(int target){
 		this.target2 = target;
 	}
+	/**
+	 * Returns the target2 that this Role is goin got visit<br>
+	 * 0 generally means that target is none
+	 */
 	public int getTarget2(){
 		return target2;
 	}
@@ -274,15 +347,32 @@ public class Role extends GameObject{
 	public void clearTargets(){
 		setTarget1(0);setTarget2(0);
 	}
+	/**
+	 * Saves a Boolean in this Role for later retrieval
+	 * @param var name of boolean to save
+	 */
 	public void setCustomVarBoolean(String var,boolean value){
 		customVarBoolean.put(var, value);
 	}
+	/**
+	 * Saves an Int in this Role for later retrieval
+	 * @param var name of Tnt to save
+	 */
 	public void setCustomVarInt(String var,int value){
 		customVarInt.put(var, value);
 	}
+	/**
+	 * Saves a String in this Role for later retrieval
+	 * @param var name of String to save
+	 */
 	public void setCustomVarString(String var,String value){
 		customVarString.put(var, value);
 	}
+	/**
+	 * Returns a previously saved Boolean
+	 * @param var name of Boolean
+	 * @return false is no variable by that name found
+	 */
 	public boolean getCustomVarBoolean(String var){
 		boolean theReturn = false;
 		if(customVarBoolean.containsKey(var)){
@@ -290,6 +380,11 @@ public class Role extends GameObject{
 		}
 		return theReturn;
 	}
+ 	/**
+ 	 * Returns a previously saved Int
+	 * @param var name of Int
+	 * @return 0 is no variable by that name found
+ 	 */
  	public int getCustomVarInt(String var){
 		int theReturn = 0;
 		if(customVarInt.containsKey(var)){
@@ -297,6 +392,11 @@ public class Role extends GameObject{
 		}
 		return theReturn;
 	}
+	/**
+	 * Returns a previously saved String
+	 * @param var name of String
+	 * @return null is no variable by that name found
+	 */
 	public String getCustomVarString(String var){
 		String theReturn = null;
 		if(customVarString.containsKey(var)){
@@ -304,9 +404,15 @@ public class Role extends GameObject{
 		}
 		return theReturn;
 	}
+	/**
+	 * Sends a chat screen message to the client of this Role's player/character
+	 */
 	public void send(String message){
 		getMatch().sendToPlayerNum(getPlayerNum(), message);
 	}
+	/**
+	 * Returns the ERSClass for scripting purposes
+	 */
 	public RoleERS getERSClass(){
 		if(this.roleERS == null){
 			this.roleERS = new RoleERS(this);

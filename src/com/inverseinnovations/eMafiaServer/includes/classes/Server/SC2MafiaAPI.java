@@ -1,6 +1,5 @@
 /* eMafiaServer - SC2MafiaAPI.java
-GNU GENERAL PUBLIC LICENSE V3
-Copyright (C) 2013  Matthew 'Apocist' Davis */
+GNU GENERAL PUBLIC LICENSE V3*/
 package com.inverseinnovations.eMafiaServer.includes.classes.Server;
 //Created by Nick(Oops_ur_dead)
 //Modified by Apocist
@@ -177,6 +176,9 @@ public class SC2MafiaAPI extends Thread{
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
+	/**
+	 * Sets if the API successfully connected to the Forum
+	 */
 	public void setConnected(boolean arg){
 		this.CONNECTED = arg;
 	}

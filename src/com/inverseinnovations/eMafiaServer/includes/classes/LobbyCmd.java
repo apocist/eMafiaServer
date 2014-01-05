@@ -14,7 +14,10 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Lobby;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Match;
 import com.inverseinnovations.eMafiaServer.includes.classes.Server.SocketClient;
 
-
+/**
+ * Provides list of all commands a Character may call when inside a Lobby<br>
+ * All method names must be appended to CMDLIST[] to be callable
+ */
 public class LobbyCmd {
 	public static String[] CMDLIST = {
 		//basic commands

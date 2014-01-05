@@ -24,7 +24,6 @@ public class Game {
 	private Map<Integer, Lobby> lobbys = new HashMap<Integer, Lobby>();
 	private Map<Integer, Match> matches = new HashMap<Integer, Match>();
 	private HashMap<Integer, Usergroup> usergroups = new HashMap<Integer, Usergroup>();
-	private String roleCategories;
 
 	/**
 	 * Prepares main Game handler
@@ -35,78 +34,118 @@ public class Game {
 	}
 	/**
 	 * Assigns a Usergroup to Game(),
-	 * @param userg Usergroup
 	 */
 	public void addUsergroup(Usergroup userg){
 		this.usergroups.put(userg.getEID(), userg);
 	}
+	/**
+	 * Returns a Usergroup based on id
+	 * @return null if usergroup id is nonexistant
+	 */
 	public Usergroup getUsergroup(int id){
 		if (this.usergroups.containsKey(id)){return this.usergroups.get(id);}
-		else{return null;}
+		return null;
 	}
 	/**
-	 * Assigns a Lobby to Game()
+	 * Assigns a new Lobby to Game()
 	 * @param l Lobby
 	 */
 	public void addLobby(Lobby l){
 		this.lobbys.put(l.getEID(), l);
 		Base.Console.debug("\""+l.getName()+"\" lobby created");
 	}
+	/**
+	 * Removes the Lobby from Game()
+	 */
 	public void removeLobby(Lobby l){
 		this.lobbys.remove(l.getEID());
 	}
+	/**
+	 * Returns a Lobby from the Game()
+	 * @return null if Lobby is nonexistant
+	 */
 	public Lobby getLobby(int id){
 		if (this.lobbys.containsKey(id)){return this.lobbys.get(id);}
-		else{return null;}
+		return null;
 	}
+	/**
+	 * Returns a Map of Lobbys in Game()
+	 */
 	public Map<Integer, Lobby> getLobbys(){
 		return this.lobbys;
 	}
+	/**
+	 * Assigns a new Match to Game()
+	 */
 	public void addMatch(Match m){
 		this.matches.put(m.getEID(), m);
 		Base.Console.fine("\""+m.getName()+"\" match created");
-		//TODO add match to clients
+		//TODO add match to client's Match_List
 	}
+	/**
+	 * Removes a Match from Game()
+	 */
 	public void removeMatch(Match m){
 		this.matches.remove(m.getEID());
-		//TODO remove match from clients
+		//TODO remove match from client's Match_List
 	}
+	/**
+	 * Returns a Match based on id
+	 * @return null if nonexistant
+	 */
 	public Match getMatch(int id){
 		if (this.matches.containsKey(id)){return this.matches.get(id);}
-		else{return null;}
+		return null;
 	}
+	/**
+	 * Returns a Map of all Matchs
+	 */
 	public Map<Integer, Match> getMatchs(){
 		return this.matches;
 	}
+	/**
+	 * Assigns a Character to the Game()
+	 */
 	public void addCharacter(Character c){
 		Base.Console.debug(c.getName()+" added to game");
 		this.characters.put(c.getEID(), c);
 	}
+	/**
+	 * Removes a Character from Game()
+	 */
 	public void removeCharacter(Character c){
 		this.characters.remove(c.getEID());
 	}
+	/**
+	 * Returns a Character from Game()
+	 * @return null if nonexistant
+	 */
 	public Character getCharacter(int id){
 		if (this.characters.containsKey(id)){return this.characters.get(id);}
-		else{return null;}
+		return null;
 	}
+	/**
+	 * Returns a Map of all Characters
+	 */
 	public Map<Integer, Character> getCharacters(){
 		return this.characters;
 	}
-	/** Returns SocketClient bound that the given client id */
+	/**
+	 * Returns SocketClient bound to the given client id
+	 * @return null if nonexistant
+	 */
 	public SocketClient getConnection(int id){
-			return Base.Server.getClient(id);
+		return Base.Server.getClient(id);
 	}
 	/**
 	 * Sets if the game is online or offline. Setting this to false will make the application close
 	 * @param state false = offline/true = online
 	 */
 	public void setGameRunning(boolean state){
-		if(state)this.GAME_IS_RUNNING = true;
-		else this.GAME_IS_RUNNING = false;
+		this.GAME_IS_RUNNING = state;
 	}
 	/**
 	 * Is the game even on? Value change from setGameRunning
-	 * @return true/false
 	 */
 	public boolean isRunning(){
 		return this.GAME_IS_RUNNING;
@@ -116,12 +155,10 @@ public class Game {
 	 * @param state false = not paused/true = paused
 	 */
 	public void setGamePaused(boolean state){
-		if(state)this.GAME_PAUSED = true;
-		this.GAME_PAUSED = false;
+		this.GAME_PAUSED = state;
 	}
 	/**
 	 * Is the game accept player input?
-	 * @return true/false
 	 */
 	public boolean isPaused(){
 		return this.GAME_PAUSED;

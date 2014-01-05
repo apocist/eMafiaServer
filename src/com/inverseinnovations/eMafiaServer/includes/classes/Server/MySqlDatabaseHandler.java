@@ -3,7 +3,6 @@ GNU GENERAL PUBLIC LICENSE V3
 Copyright (C) 2012  Matthew 'Apocist' Davis */
 package com.inverseinnovations.eMafiaServer.includes.classes.Server;
 
-
 import java.sql.*;
 import java.util.*;
 
@@ -15,13 +14,11 @@ import com.inverseinnovations.eMafiaServer.includes.*;
 import com.inverseinnovations.eMafiaServer.includes.classes.*;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.*;
 
-
 /**Manages database interaction*/
-public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow mysql injections
-	public Base Base;//back reference to parent
+public class MySqlDatabaseHandler {
+	public Base Base;
 
 	private Connection con = null;
-	//private Statement st = null;
 	private PreparedStatement st = null;
 	private ResultSet rs = null;
 
@@ -70,16 +67,15 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 			Base.Console.printStackTrace(e);
 		}
 	}
-
+	/**
+	 * Returns list of all possible roles(by database id) based on parameters
+	 * @param setup
+	 * @param aff affilation
+	 * @param cat category
+	 */
 	public Map<Integer, Integer> grabRoleCatList(String setup,String aff,String cat){//TODO error testing needs to be done
 		Map<Integer, Integer> list = new LinkedHashMap<Integer, Integer>();
-		//setup = dbHandler::secure(setup);aff = dbHandler::secure(aff); cat = dbHandler::secure(cat);
-		//if(!setup.equals("DEFAULT") && !setup.equals("CUSTOM")){Base.Console.warning("BAD SETUP VALUE: "+setup);return null;}
-		//if(!aff.equals("TOWN") && !aff.equals("MAFIA") && !aff.equals("NUTERAL") && !aff.equals("ANY")){Base.Console.warning("BAD AFF VALUE: "+aff);return null;}
-		//if(!cat.equals("CORE") && !cat.equals("INVESTIGATIVE")){Base.Console.warning("BAD CAT VALUE: "+cat);return null;}
-			//$result=mysql_query("SELECT id, name FROM roles WHERE setup = '$setup' AND affiliation = '$aff' AND (cat1 = '$cat' OR cat2 = '$cat')");
 		try {
-			//rs = st.executeQuery( "SELECT id, name FROM roles WHERE setup = '"+setup+"' AND affiliation = '"+aff+"' AND (cat1 = '"+cat+"' OR cat2 = '"+cat+"')");
 			st = con.prepareStatement("SELECT id, name FROM roles WHERE setup = ? AND affiliation = ? AND (cat1 = ? OR cat2 = ?)");
 			st.setString(1, setup);st.setString(2, aff);st.setString(3, cat);st.setString(4, cat);
 			rs = st.executeQuery();
@@ -96,7 +92,11 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		//}
 		//else{echo "NO RESULTS\n";return FALSE;}
 	}
-
+	/**
+	 * Fetch Role from Database.<br>
+	 * @param id database id
+	 * @return null upon error or role not found
+	 */
 	public Role grabRole(int id){
 		Role role = null;
 		int setup;
@@ -156,7 +156,13 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		catch (SQLException e){Base.Console.severe("GrabRole error");Base.Console.printStackTrace(e);}
 		return role;
 	}
-	/**Does NOT grab entirity of a Role...used for only quick searches **/
+	/**
+	 * Returns list of possible roles fitting the parameters provided.<br>
+	 * Does NOT grab entirity of a Role...used for only quick searches
+	 * @param aff affilation
+	 * @param cat category
+	 * @param page page row of 10
+	 */
 	public ArrayList<Role> searchRoles(String aff, String cat, int page){
 		ArrayList<Role> list = new ArrayList<Role>();
 		//Role role = null;
@@ -187,35 +193,20 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 					category[1] = rs.getString("cat2");
 
 					list.add(new Role(null, rs.getInt("id"),rs.getString("name"),setup,rs.getString("affiliation"), category));//,category);
-					//role.setActionOrder(rs.getInt("actionorder"));
-					//role.setMayGameEndCon(rs.getString("maygameend"));
-					//role.setVictoryCon(rs.getString("victorycon"));
-					//role.setActionStartup(rs.getString("scriptstartup"));
-					//role.setActionNight(rs.getString("scriptnight"));
-					//role.setActionNightClicked(rs.getString("scriptnightclick"));
-					//role.setActionDay(rs.getString("scriptday"));
-					//role.setActionBeforeDay(rs.getString("scriptbeforeday"));
-					//role.setActionBeforeNight(rs.getString("scriptbeforenight"));
-					//role.targetablesNight1=rs.getInt("targetsN1");
-					//role.targetablesNight2=rs.getInt("targetsN2");
-					//role.targetablesDay1=rs.getInt("targetsD1");
-					//role.targetablesDay2=rs.getInt("targetsD2");
 			}
-			//else{Base.Console.warning("ERROR NO RESULTS for id "+id+"!\n");}
 		}
 		catch (SQLException e){Base.Console.severe("searchRole error");Base.Console.printStackTrace(e);}
 		return list;
 	}
 	/**
-	 * Checks if user is able to connect with provided password
+	 * Checks if user is able to connect with provided password.<br>
+	 * Correct creditails will return boolean variable 'success' as TRUE
 	 * @param username inputted username
 	 * @param pass inputted password(should already be in MD5 format)
 	 * @return ArrayList<Object>[boolean success, String username, int usergroup]
 	 */
 	public HashMap<String,Object> connectUserPass(String username, String pass) {//$pass must already be passed in MD5 format
 		username = username.toLowerCase();
-		//Base.Console.debug("password crypted is: "+crypt_password);
-		//Base.Console.debug(crypt_password);
 		HashMap<String,Object> data = new HashMap<String,Object>();
 		try{
 			st = con.prepareStatement("SELECT * FROM user_account WHERE username=?");
@@ -250,7 +241,6 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		}
 		return data;
 	}
-
 	/**
 	 * Returns whether user exists in database or not
 	 * @param username
@@ -293,15 +283,15 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 			return 2;
 		}
 	}
-
 	/**
 	 * Creates entry in database for new account to be verified
+	 * and PMs a token through the SC@ forum to the user, needed for verification<br>
+	 * Only Forum account names are possible
 	 * @param username
 	 * @param pass must be in MD5 format
-	 * @return boolean if create was made
+	 * @return boolean if creation was succesful
 	 */
 	public String createAccount(String username, String pass) {
-		//$username = dbHandler::secure($username);
 		String temp = "";
 		String salt = generateSalt();
 		String crypt_password = crypt(pass,salt);
@@ -309,10 +299,9 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		String token = StringFunctions.Base64encode(StringFunctions.substr(username, 1, 1)+rand.nextInt(9999999)+StringFunctions.substr(username, 0, 1));
 		token = token.replace("==", "s8").replace("=", "").replace("+/", "");
 		Long reg_time = System.currentTimeMillis()/1000;
+		//TODO need to setup the said web service
 		if((temp = Base.ForumAPI.sendMsg(username,"eMafia Account Verification","[table][tr][td]Welcome to [B][COLOR=#DAA520]e[/COLOR]Mafia[/B], "+username+"![/td][/tr][tr][td][/td][/tr][tr][td] Your account has been created, but still needs verification within 24 hours. Below is your verification code:[/td][/tr][tr][td][CENTER][COLOR=WHITE][SIZE=6][B]"+token+"[/B][/SIZE][/COLOR][/CENTER][/td][/tr][tr][td][/td][/tr][tr][td] If you are not the one that started the creation process, please ignore this email or click the link below to never receive any messages about [B][COLOR=#DAA520]e[/COLOR]Mafia[/B] again(link not available at this moment, contact Apocist):[/td][/tr][tr][td][URL=http://eMafia.hikaritemple.com/spam?v="+token+"]http://eMafia.hikaritemple.com/spam?v="+token+"[/URL][/td][/tr][tr][td][/td][/tr][tr][td][/td][/tr][tr][td][/td][/tr][tr][td][/td][/tr][tr][td][/td][/tr][tr][td][/td][/tr][tr][td][/td][/tr][/table]")).equals("pm_messagesent")){
-		//if(Base.ForumAPI.sendMsg(username,"eMafia Account Verification","a test messgae with token: "+token)){
 			try {
-				//st.executeUpdate("INSERT INTO user_verify (username, pass, token, reg_time) VALUES ('"+username+"','"+pass+"','"+token+"','"+reg_time+"')");
 				st = con.prepareStatement("INSERT INTO user_verify (username, pass, pass2, token, reg_time) VALUES (?,?,?,?,?)");
 				st.setString(1, username);st.setString(2, crypt_password);st.setString(3, salt);st.setString(4, token);st.setLong(5, reg_time);
 				st.executeUpdate();
@@ -325,11 +314,11 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		}
 		return temp;
 	}
-
-	/**Checks if username/password/token combo is correct
+	/**
+	 * Checks if username/password/token combo is correct
 	 * then creates the user accounts and removes from awaiting verification.
 	 * @param username
-	 * @param pass
+	 * @param pass in MD5 format
 	 * @param verify token
 	 * @return true for successful verification
 	 */
@@ -349,19 +338,16 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 					String user = rs.getString("username");
 					long reg_time = rs.getLong("reg_time");
 					int usergroup = 5;
-					//st.executeUpdate("DELETE FROM user_verify WHERE id='"+id+"'");
 					st = con.prepareStatement("DELETE FROM user_verify WHERE id=?");
 					st.setInt(1, id);
 					st.executeUpdate();
 					//check if they were preregistered
-					//rs=st.executeQuery("SELECT * FROM user_preregister WHERE username='"+user+"'");
 					usergroup = 5;//defualt members to normal member
 					st = con.prepareStatement("SELECT * FROM user_preregister WHERE username=?");
 					st.setString(1, user);
 					rs = st.executeQuery();
 					if(rs.next()){ // If match.
 						usergroup = rs.getInt("user_group");
-						//st.executeUpdate("DELETE FROM user_preregister WHERE username='"+user+"'");
 						st = con.prepareStatement("DELETE FROM user_preregister WHERE username=?");
 						st.setString(1, user);
 						st.executeUpdate();
@@ -382,10 +368,10 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		}
 		return false;
 	}
-
-	/**Grabs forum data from Forum based on username and uploads to eMafia database
+	/**
+	 * Grabs user data from Forum based on username and uploads to eMafia database
 	 * @param username
-	 * @return
+	 * @return boolean base on success
 	 */
 	public boolean updateForumData(String username){
 		try{
@@ -410,22 +396,19 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 			return false;
 		}
 	}
-
-	/**Returns a crypted pass for database
+	//XXX is this secure enough?
+	/**
+	 * Returns a crypted pass for database<br>
 	 * encSalt shall received from generateSalt() or from database directly
 	 */
-	private String crypt(String password, String encSalt){//,String salt){
-		//return StringFunctions.MD5(StringFunctions.substr(username, 0, 1)+password+StringFunctions.substrLastChar(username));
-		//encSalt has fake in back
-		// MD5( BCrypt( MD5(password[-1] password + password[3] + password[4]) ), savedSalt) )
+	private String crypt(String password, String encSalt){
 		String salt = encSalt;
-		if(salt.length() > 3)salt = encSalt.substring(3);//removes front 3
-		if(salt.length() > 3)salt = StringFunctions.substr(salt, 0, salt.length()-3);//removes back 3
+		if(salt.length() > 3)salt = encSalt.substring(3);
+		if(salt.length() > 3)salt = StringFunctions.substr(salt, 0, salt.length()-3);
 		String crypted = BCrypt.hashpw(StringFunctions.MD5(StringFunctions.substrLastChar(password)+password+StringFunctions.substr(password, 2, 2)),salt);
 		return StringFunctions.MD5("!4f/"+crypted+"rJ");
 
 	}
-
 	/**
 	 * Generates salt for use with crypt() or save to database
 	 */
@@ -435,7 +418,7 @@ public class MySqlDatabaseHandler {//FIXME Need a 'secure' method to not allow m
 		String back = java.lang.Character.toString(StringFunctions.rndChar())+rand.nextInt(9)+java.lang.Character.toString(StringFunctions.rndChar());char whee;
 		return front+BCrypt.gensalt(12)+back;
 	}
-
+	/**Prints MySql version to the Console*/
 	public void getVersion(){//a test
 		try {
 			st = con.prepareStatement("SELECT VERSION()");

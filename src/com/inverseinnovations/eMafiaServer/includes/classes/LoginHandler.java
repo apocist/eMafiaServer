@@ -10,7 +10,14 @@ import com.inverseinnovations.eMafiaServer.includes.CmdCompile;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Character;
 import com.inverseinnovations.eMafiaServer.includes.classes.Server.*;
 
-
+/**
+ * Class provides a means of moving a recently connected client between 'states'<br>
+ * This class should lead to atleast 4 results:<br>
+ * -Creditails verified and logged in<br>
+ * -Creditails rejected and asked to verify again<br>
+ * -Creation of new account<br>
+ * -Verifying a new account
+ */
 public class LoginHandler {
 	public static void parse(Base Base, SocketClient cObj, String command){
 		switch(cObj.loginState){
