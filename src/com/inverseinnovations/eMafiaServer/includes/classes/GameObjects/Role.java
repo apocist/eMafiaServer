@@ -198,8 +198,8 @@ public class Role extends GameObject{
 		return ersScript;
 	}
 	/**Returns the requested script for the specified event. Returns null if no existing event or script.
-	 * @param eventCall
-	 * @return ERS Script
+	 * @param eventCall name of script
+	 * @return script to process
 	 */
 	public String getScript(String eventCall){
 		String theReturn = null;
@@ -211,8 +211,8 @@ public class Role extends GameObject{
 		return theReturn;
 	}
 	/**Saves an ERS Script for the specified event
-	 * @param eventCall
-	 * @param script
+	 * @param eventCall name of script
+	 * @param script script to save
 	 */
 	public void setScript(String eventCall, String script){
 		if(StringUtils.isNotEmpty(eventCall)){
