@@ -6,11 +6,13 @@ package com.inverseinnovations.eMafiaServer.includes;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
-//import eMafiaServer.includes.classes.GameObjects.Character;
 
 public class StringFunctions {
-	//static java.lang.reflect.Method method;
 
+	/**
+	 * Checks if a String may be translated as an int
+	 * @param s String to check
+	 */
 	public static boolean isInteger(String s){
 		if(s != null && s != "")return isInteger(s,10);
 		else return false;
@@ -26,6 +28,10 @@ public class StringFunctions {
 		}
 		return true;
 	}
+	/**
+	 * Checks if an int is equal to or inbetween the ints TO and From
+	 * @param value Value to check
+	 */
 	public static boolean betweenInt(int value, int from, int to){
 		boolean bool = false;
 		if(value >= from)if(value <= to)bool = true;
@@ -33,8 +39,7 @@ public class StringFunctions {
 		return bool;
 	}
 	/**
-	 * Output a randomly generated name
-	 * @return string
+	 * Return a randomly generated name
 	 */
 	public static String make_rand_name(){
 		String name = "";
@@ -193,8 +198,7 @@ public class StringFunctions {
 		return null;
 	}
 	/**
-	 * @param str String
-	 * @return String with \n \r and \0 removed from front and back.
+	 * Return String with \n \r and \0 removed from front and back.
 	 */
 	public static String stripEnds(String str){
 		str = str.replace("\n", "");
@@ -203,25 +207,25 @@ public class StringFunctions {
 		return str;
 	}
 	/**
+	 * Return String with -length- number of characters
 	 * @param str String
 	 * @param start Starting position of char in string
 	 * @param length How many characters to return
-	 * @return String with -length- number of characters
 	 */
 	public static String substr(String str, int start, int length){
 		return str.substring(start,Math.min(str.length(), length));
 	}
 	/**
+	 * Return String with only the single last char from provided string
 	 * @param str String
-	 * @return String with only the single last char from provided string
 	 */
 	public static String substrLastChar(String str){
 		return str.substring(str.length()-1);
 	}
 	/**
+	 * Return String of last number of chars from provided string
 	 * @param str String
 	 * @param length Number of characters
-	 * @return String of last number of chars from provided string
 	 */
 	public static String substrLastChar(String str, int length){
 		return str.substring(str.length()-(1*length));
@@ -229,23 +233,31 @@ public class StringFunctions {
 //////////////////
 ////HTML Edits////
 //////////////////
+	/**
+	 * Wraps a String with HTML format font color tag
+	 * @param hexcolor 6 digit Hex code of color
+	 * @param string String to colorize
+	 */
 	public static String HTMLColor(String hexcolor,String string){
 		return "<font color=\"#"+hexcolor+"\">"+string+"</font>";
 	}
-
+	/**
+	 * Returns a random Character
+	 */
 	public static char rndChar () {
-		int rnd = (int) (Math.random() * 52); // or use Random or whatever
+		int rnd = (int) (Math.random() * 52);
 		char base = (rnd < 26) ? 'A' : 'a';
 		return (char) (base + rnd % 26);
 
 	}
-
 	private static byte[] zeroPad(int length, byte[] bytes) {
 		byte[] padded = new byte[length]; // initialized to zero by JVM
 		System.arraycopy(bytes, 0, padded, 0, bytes.length);
 		return padded;
 	}
-
+	/**
+	 * Encodes a String to Base64 format
+	 */
 	public static String Base64encode(String string) {
 		String base64code = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789" + "+/";
 		String encoded = "";
@@ -260,7 +272,6 @@ public class StringFunctions {
 		// add any necessary padding to the input
 		stringArray = zeroPad(stringArray.length + paddingCount, stringArray);
 		// process 3 bytes at a time, churning out 4 output bytes
-		// worry about CRLF insertions later
 		for (int i = 0; i < stringArray.length; i += 3) {
 			int j = ((stringArray[i] & 0xff) << 16) +
 				((stringArray[i + 1] & 0xff) << 8) +
@@ -270,8 +281,6 @@ public class StringFunctions {
 				base64code.charAt((j >> 6) & 0x3f) +
 				base64code.charAt(j & 0x3f);
 		}
-		// replace encoded padding nulls with "="
-		//return splitLines(encoded.substring(0, encoded.length() - paddingCount) + "==".substring(0, paddingCount));
 		return encoded.substring(0, encoded.length() - paddingCount) + "==".substring(0, paddingCount);
 
 	}
