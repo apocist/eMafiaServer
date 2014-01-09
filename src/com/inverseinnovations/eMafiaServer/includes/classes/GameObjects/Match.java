@@ -592,8 +592,10 @@ public class Match extends GameObject{
 	public ArrayList<Role> getRolesWithActionCat(String cat){
 		ArrayList<Role> roleList = new ArrayList<Role>();
 		for(Role role:roles){
-			if(role.getActionCat().equals(cat)){
-				roleList.add(role);
+			if(role != null){
+				if(role.getActionCat().equals(cat)){
+					roleList.add(role);
+				}
 			}
 		}
 		return roleList;
@@ -829,8 +831,10 @@ public class Match extends GameObject{
 		}
 		//RoleBlock makes user have no target
 		for(Role role : roles){
-			if(role.hasFlag("ROLEBLOCKED")){
-				role.clearTargets();
+			if(role != null){
+				if(role.hasFlag("ROLEBLOCKED")){
+					role.clearTargets();
+				}
 			}
 		}
 		//end RoleBlock
@@ -1194,7 +1198,7 @@ public class Match extends GameObject{
 					chooseName(i, StringFunctions.make_rand_name());
 				}
 			}
-
+			doScriptProcess("onStartup");
 			for(int i = 1; i < this.players.length; i++){//tell each of their roles
 				getCharacter((getPlayer(i).getEID())).send(CmdCompile.chatScreen(StringFunctions.HTMLColor("FFFF00", getPlayer(i).inGameName+", your role is ")+StringFunctions.HTMLColor("00FF00", getPlayerRole(i).getName())));
 				getCharacter((getPlayer(i).getEID())).send(CmdCompile.setPlayerNum(i));
@@ -1377,8 +1381,6 @@ public class Match extends GameObject{
 				}
 				tempRole = null;
 			}
-			//resortActionOrder();
-			doScriptProcess("onStartup");
 		}
 		return noError;
 	}

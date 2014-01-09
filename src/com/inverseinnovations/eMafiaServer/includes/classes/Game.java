@@ -7,7 +7,10 @@ package com.inverseinnovations.eMafiaServer.includes.classes;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mozilla.javascript.ContextFactory;
+
 import com.inverseinnovations.eMafiaServer.*;
+import com.inverseinnovations.eMafiaServer.includes.SandboxContextFactory;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.*;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Character;
 import com.inverseinnovations.eMafiaServer.includes.classes.Server.*;
@@ -31,6 +34,7 @@ public class Game {
 	public Game(Base base){
 		this.Base = base;
 		this.start_time = System.nanoTime();
+		ContextFactory.initGlobal(new SandboxContextFactory());
 	}
 	/**
 	 * Assigns a Usergroup to Game(),
