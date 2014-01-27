@@ -826,7 +826,7 @@ public class Match extends GameObject{
 	public void doScriptProcess(String event){
 		for(Team team:getTeams()){
 			if(StringUtils.isNotEmpty(team.getScript(event))){
-				new scriptProcess(team.getScript(event), team);
+				new scriptProcess(event, team.getScript(event), team);
 			}
 		}
 		//RoleBlock makes user have no target
@@ -843,18 +843,18 @@ public class Match extends GameObject{
 			for(Role role:roleList){
 				for(Flag flag : role.getFlags().values()){//TODO flags test if work
 					if(flag.isScriptedPre()){
-						new scriptProcess(flag.getScriptPre(event), role);
+						new scriptProcess(event, flag.getScriptPre(event), role);
 					}
 				}
 				if(StringUtils.isNotEmpty(role.getScript(event))){
 					try{
-						new scriptProcess(role.getScript(event), role);
+						new scriptProcess(event, role.getScript(event), role);
 					}
 					catch(Exception e){Game.Base.Console.printStackTrace(e);}
 				}
 				for(Flag flag : role.getFlags().values()){//TODO flags test if work
 					if(flag.isScriptedPost()){
-						new scriptProcess(flag.getScriptPost(event), role);
+						new scriptProcess(event, flag.getScriptPost(event), role);
 					}
 				}
 			}
@@ -868,15 +868,15 @@ public class Match extends GameObject{
 		Role role = getPlayerRole(playerNum);
 		for(Flag flag : role.getFlags().values()){//TODO flags test if work
 			if(flag.isScriptedPre()){
-				new scriptProcess(flag.getScriptPre(event), role);
+				new scriptProcess(event, flag.getScriptPre(event), role);
 			}
 		}
 		if(StringUtils.isNotEmpty(role.getScript(event))){//if there is a event script
-				new scriptProcess(role.getScript(event), role);//does event script
+				new scriptProcess(event, role.getScript(event), role);//does event script
 		}
 		for(Flag flag : role.getFlags().values()){//TODO flags test if work
 			if(flag.isScriptedPost()){
-				new scriptProcess(flag.getScriptPost(event), role);
+				new scriptProcess(event, flag.getScriptPost(event), role);
 			}
 		}
 	}
@@ -976,7 +976,7 @@ public class Match extends GameObject{
 		Role role = getRole(getAlivePlayer(playerNum).getRoleNumber());
 		Role attackerRole = getRole(getAlivePlayer(attacker).getRoleNumber());
 		if(getPhaseDayType() == Constants.PHASEDAYTYPE_NIGHT){
-			new scriptProcess(role.getScript("onAttacked"), role, attackerRole);
+			new scriptProcess("onAttacked", role.getScript("onAttacked"), role, attackerRole);
 			if(!role.hasFlag("NIGHTIMMUNE")){
 				playerDeathReasons(playerNum,deathType,deathDesc);
 				role.setHp(role.getHp() - 1);
@@ -1061,12 +1061,12 @@ public class Match extends GameObject{
 	private boolean checkVictoryAndGameEnd(){
 		int numberChecked,numberMet = 0;
 		for(Team team : teams.values()){
-			new scriptProcess(team.getScript("victoryCon"), team);
+			new scriptProcess("victoryCon", team.getScript("victoryCon"), team);
 			Game.Base.Console.debug(team.getName()+"'s victory: "+team.getVictory());
 		}
 		for(Team team : teams.values()){
 			if(StringUtils.isNotEmpty(team.getScript("mayGameEndCon"))){
-				new scriptProcess(team.getScript("mayGameEndCon"), team);
+				new scriptProcess("mayGameEndCon", team.getScript("mayGameEndCon"), team);
 			}
 			else{team.setMayGameEnd(true);Game.Base.Console.debug(team.getName()+" has no mayGameEndCon");}
 			Game.Base.Console.debug(team.getName()+"'s mayGameEnd: "+team.getMayGameEnd());
@@ -1080,7 +1080,7 @@ public class Match extends GameObject{
 				getPlayerRole(player).setVictory(getTeam(getPlayerRole(player).getTeamName()).getVictory());//sets victory for player
 			}
 			else{
-				new scriptProcess(getPlayerRole(player).getScript("victoryCon"), getPlayerRole(player));//does victory checks
+				new scriptProcess("victoryCon", getPlayerRole(player).getScript("victoryCon"), getPlayerRole(player));//does victory checks
 			}
 		}
 		//Check if game may end for all living players
@@ -1090,7 +1090,7 @@ public class Match extends GameObject{
 			}
 			else{
 				if(StringUtils.isNotEmpty(getPlayerRole(player).getScript("mayGameEndCon"))){
-					new scriptProcess(getPlayerRole(player).getScript("mayGameEndCon"), getPlayerRole(player));//does game may end con
+					new scriptProcess("mayGameEndCon", getPlayerRole(player).getScript("mayGameEndCon"), getPlayerRole(player));//does game may end con
 				}
 				else{getPlayerRole(player).setMayGameEnd(true);}
 			}
@@ -1575,7 +1575,7 @@ public class Match extends GameObject{
 		setPhaseMain(Constants.PHASEMAIN_ENDGAME);
 		//check for winning teams and display
 		for(Team team : teams.values()){
-			new scriptProcess(team.getScript("victoryCon"), team);
+			new scriptProcess("victoryCon", team.getScript("victoryCon"), team);
 			if(team.getVictory()){
 				send(CmdCompile.chatScreen(team.getName()+" won!"));
 			}
@@ -1587,7 +1587,7 @@ public class Match extends GameObject{
 				getPlayerRole(player).setVictory(getTeam(getPlayerRole(player).getTeamName()).getVictory());//sets victory for player
 			}
 			else{
-				new scriptProcess(getPlayerRole(player).getScript("victoryCon"), getPlayerRole(player));//does victory checks
+				new scriptProcess("victoryCon", getPlayerRole(player).getScript("victoryCon"), getPlayerRole(player));//does victory checks
 			}
 
 			if(getPlayerRole(player).getVictory()){

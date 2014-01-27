@@ -103,6 +103,7 @@ public class Console extends Frame{
 		super("eMafia Server "+Constants.VERSION);//client title
 		this.Base = base;
 		setSize(800,600);//client window size
+		//setLocationRelativeTo(null);
 		JScrollPane scrollpane = new JScrollPane(output);
 		add(scrollpane);
 

@@ -275,6 +275,9 @@ public class CmdCompile {
 
 	//-Popups/prompts-//
 
+	public static byte[] genericPlainPopup(String message){//998
+		return cmdCompiler(998,message);
+	}
 	public static byte[] genericPopup(String message){//999
 		return cmdCompiler(999,message);
 	}

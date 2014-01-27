@@ -16,19 +16,19 @@ public class scriptProcess {
 	private boolean scriptDebugging = true;
 	//static ScriptEngine js = new ScriptEngineManager().getEngineByName("javascript");
 
-	public scriptProcess(final String string, final Match match){
-		this(string, match, null, null, null);
+	public scriptProcess(final String event, final String string, final Match match){
+		this("Match "+event, string, match, null, null, null);
 	}
-	public scriptProcess(final String string, final Team team){
-		this(string, team.getMatch(), null, null, team);
+	public scriptProcess(final String event, final String string, final Team team){
+		this(team.getName()+" "+event, string, team.getMatch(), null, null, team);
 	}
-	public scriptProcess(final String string, final Role role){
-		this(string, role.getMatch(), role, null, role.getTeam());
+	public scriptProcess(final String event, final String string, final Role role){
+		this(role.getName()+" "+event, string, role.getMatch(), role, null, role.getTeam());
 	}
-	public scriptProcess(final String string, final Role role, final Role visitor){
-		this(string, role.getMatch(), role, visitor, role.getTeam());
+	public scriptProcess(final String event, final String string, final Role role, final Role visitor){
+		this(role.getName()+" "+event, string, role.getMatch(), role, visitor, role.getTeam());
 	}
-	public scriptProcess(final String string, final Match match, final Role role, final Role visitor, final Team team){
+	public scriptProcess(final String scriptName, final String string, final Match match, final Role role, final Role visitor, final Team team){
 		if(StringUtils.isNotBlank(string)){
 			if(scriptDebugging){
 				match.Game.Base.Console.debug("SCRIPT: doing script:");
@@ -77,9 +77,9 @@ public class scriptProcess {
 				else{
 					theScriptor = "Match";
 				}
-				String msg = "Script RuntimeException from "+theScriptor+"...: "+e.getMessage()+"\n From Script:\n"+string;
+				String msg = "Script RuntimeException from "+theScriptor+"...: "+e.getMessage();
 				match.Game.Base.Console.warning(msg);
-				match.send(CmdCompile.genericPopup(msg));
+				match.send(CmdCompile.genericPlainPopup(msg));
 				//TODO need to 'wrap' msg to fit window
 				e.printStackTrace();//Don't want this spamming the Console
 			}

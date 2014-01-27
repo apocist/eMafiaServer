@@ -305,15 +305,15 @@ public class Role extends GameObject{
 		addVisitedBy(visitor.getPlayerNum());
 		for(Flag flag : getFlags().values()){//TODO flags test if work
 			if(flag.isScriptedPre()){
-				new scriptProcess(flag.getScriptPre("onVisit"), this, visitor);
+				new scriptProcess("onVisit", flag.getScriptPre("onVisit"), this, visitor);
 			}
 		}
 		if(StringUtils.isNotEmpty(getScript("onVisit"))){
-			new scriptProcess(getScript("onVisit"), this, visitor);
+			new scriptProcess("onVisit", getScript("onVisit"), this, visitor);
 		}
 		for(Flag flag : getFlags().values()){//TODO flags test if work
 			if(flag.isScriptedPost()){
-				new scriptProcess(flag.getScriptPost("onVisit"), this, visitor);
+				new scriptProcess("onVisit", flag.getScriptPost("onVisit"), this, visitor);
 			}
 		}
 	}

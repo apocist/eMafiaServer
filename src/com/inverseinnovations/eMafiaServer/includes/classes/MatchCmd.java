@@ -313,7 +313,7 @@ public class MatchCmd {
 				if(m.getPhaseDayType()==Constants.PHASEDAYTYPE_NIGHT){dayNight = "onNightTargetChoice";}
 				else if(m.getPhaseDayType()==Constants.PHASEDAYTYPE_NORMAL){dayNight = "onDayTargetChoice";}
 				if(dayNight != null){
-					new scriptProcess(m.getPlayerRole(c.getPlayerNum()).getScript(dayNight), m.getPlayerRole(c.getPlayerNum()));
+					new scriptProcess(dayNight, m.getPlayerRole(c.getPlayerNum()).getScript(dayNight), m.getPlayerRole(c.getPlayerNum()));
 				}
 			}catch(Exception e){m.Game.Base.Console.printStackTrace(e);}
 		}
@@ -330,7 +330,7 @@ public class MatchCmd {
 				if(m.getPhaseDayType()==Constants.PHASEDAYTYPE_NIGHT){dayNight = "onNightTargetChoice";}
 				else if(m.getPhaseDayType()==Constants.PHASEDAYTYPE_NORMAL){dayNight = "onDayTargetChoice";}
 				if(dayNight != null){
-					new scriptProcess(m.getPlayerRole(c.getPlayerNum()).getScript(dayNight), m.getPlayerRole(c.getPlayerNum()));
+					new scriptProcess(dayNight, m.getPlayerRole(c.getPlayerNum()).getScript(dayNight), m.getPlayerRole(c.getPlayerNum()));
 				}
 			}catch(Exception e){m.Game.Base.Console.printStackTrace(e);}
 		}
