@@ -13,20 +13,20 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Team;
 import org.mozilla.javascript.*;
 
 public class scriptProcess {
-	private boolean scriptDebugging = true;
+	private boolean scriptDebugging = false;
 	//static ScriptEngine js = new ScriptEngineManager().getEngineByName("javascript");
 
 	public scriptProcess(final String event, final String string, final Match match){
 		this("Match "+event, string, match, null, null, null);
 	}
 	public scriptProcess(final String event, final String string, final Team team){
-		this(team.getName()+" "+event, string, team.getMatch(), null, null, team);
+		this("TEAM "+team.getName()+" "+event, string, team.getMatch(), null, null, team);
 	}
 	public scriptProcess(final String event, final String string, final Role role){
-		this(role.getName()+" "+event, string, role.getMatch(), role, null, role.getTeam());
+		this("ROLE "+role.getName()+" "+event, string, role.getMatch(), role, null, role.getTeam());
 	}
 	public scriptProcess(final String event, final String string, final Role role, final Role visitor){
-		this(role.getName()+" "+event, string, role.getMatch(), role, visitor, role.getTeam());
+		this("ROLE "+role.getName()+" "+event, string, role.getMatch(), role, visitor, role.getTeam());
 	}
 	public scriptProcess(final String scriptName, final String string, final Match match, final Role role, final Role visitor, final Team team){
 		if(StringUtils.isNotBlank(string)){
@@ -68,18 +68,9 @@ public class scriptProcess {
 			}
 			catch (ExecutionException e) {
 				String theScriptor = "Unknown";
-				if(team != null){
-					theScriptor = "Team "+team.getName();
-				}
-				else if(role != null){
-					theScriptor = "Role "+role.getName();
-				}
-				else{
-					theScriptor = "Match";
-				}
-				String msg = "Script RuntimeException from "+theScriptor+"...: "+e.getMessage();
+				String msg = "Script RuntimeException from "+scriptName+"...: "+e.getMessage();
 				match.Game.Base.Console.warning(msg);
-				match.send(CmdCompile.genericPlainPopup(msg));
+				match.send(CmdCompile.genericPopup(msg));
 				//TODO need to 'wrap' msg to fit window
 				e.printStackTrace();//Don't want this spamming the Console
 			}
