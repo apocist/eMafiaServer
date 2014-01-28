@@ -3,10 +3,9 @@ GNU GENERAL PUBLIC LICENSE V3
 Copyright (C) 2012  Matthew 'Apocist' Davis */
 package com.inverseinnovations.eMafiaServer.includes.classes.Server;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 
 import com.inverseinnovations.eMafiaServer.includes.CmdCompile;
@@ -20,7 +19,8 @@ public class SocketClient extends Thread{
 	private Socket socket;
 	private boolean RUNNING = true;
 	private boolean ONLINE = false;
-	private BufferedReader in;
+	//private BufferedReader in;
+	private DataInputStream in;
 	private DataOutputStream out;
 	//Login scripts
 	public int loginState = 2;//1 = new. 2 = user/password
@@ -54,7 +54,8 @@ public class SocketClient extends Thread{
 		try{
 			ipAddress = socket.getInetAddress().getHostAddress();//get ip
 			//get socket writing and reading streams
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			//in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			in = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());
 			//out = new PrintStream(socket.getOutputStream());
 
@@ -63,23 +64,48 @@ public class SocketClient extends Thread{
 			Server.onConnect(this);
 
 			//Now start reading input from client
-			/*while((line = in.readLine()) != null && !line.equals(".")){
-				//reply with the same message, adding some text
-				out.println("I got : " + line);
-			}*/
 			while(RUNNING){
-				if((line = in.readLine()) != null){
+				//if((line = in.readLine()) != null){
+				while(in.readUnsignedByte() == 0) {// gets 1 byte starter
 					try{
-						Server.onRead(this,line);
+						//Server.onRead(this,line);
+						int cmdSize;
+						byte[] commandByte = null;
+						String command;
+						int dataSize;
+						byte[] data = null;
+						cmdSize = in.readUnsignedByte();// gets 1 byte size of command
+						if (cmdSize > 0) {
+							commandByte = new byte[cmdSize];
+						}
+						//Server.Base.Console.debug("cmdSize = "+cmdSize);
+						in.readFully(commandByte, 0, cmdSize);// gets command
+						command = new String(commandByte,"ISO-8859-1");//convert byte to String
+
+						dataSize = in.readUnsignedShort();	// gets 2 byte size of data(may
+														// increase size later..only
+														// supports 65.5 kbs of data
+														// transfer per command)
+						if (dataSize > 0) {
+							data = new byte[dataSize];
+						}
+						in.readFully(data, 0, dataSize);// gets data
+
+						if (in.readUnsignedByte() == 255) {// gets 1 byte ender, if data
+							// too big, this wont be
+							// reached then theres error
+							Server.onRead(this,command,data);
+						}
+
 					}
 					catch(Exception e){
 						Server.Base.Console.warning("Exception on SocketClient during onRead: client "+clientEID);
 						Server.Base.Console.printStackTrace(e);
 					}
 				}
-				else{
+				/*else{
 					break;
-				}
+				}*/
 			}
 			this.offline();
 			this.close();

@@ -139,12 +139,12 @@ public class SocketServer {
 	 * @param cObj Client Connection(this)
 	 * @param data Client input submitted
 	 */
-	public void onRead(SocketClient cObj, String data){
-		String[] split = data.split("\n");
+	public void onRead(SocketClient cObj, String command, byte[] data){
+		String[] split = command.split("\n");
 
 		for(String temp : split){
 			if(temp != null){
-				this.parseClientInput(cObj, temp);
+				this.parseClientInput(cObj, temp, data);
 			}
 		}
 	}
@@ -153,7 +153,7 @@ public class SocketServer {
 	 * @param cObj Client Connection(SocketClient)
 	 * @param cdata Client command statement
 	 */
-	public void parseClientInput(SocketClient cObj, String cdata){
+	public void parseClientInput(SocketClient cObj, String cdata, byte[] data){
 		cdata = StringFunctions.stripEnds(cdata);
 		if (cObj.getCharEID() == 0){//character doesnt exist, player is in login screen
 			//----------Logging in here------------
@@ -171,10 +171,10 @@ public class SocketServer {
 
 			if (!fsplit[0].trim().equals("")){
 				if(fsplit.length == 1){
-					CmdHandler.processCmd(c,fsplit[0],null);
+					CmdHandler.processCmd(c,fsplit[0],null,data);
 				}
 				else{
-					CmdHandler.processCmd(c,fsplit[0],fsplit[1]);
+					CmdHandler.processCmd(c,fsplit[0],fsplit[1],data);
 				}
 			}
 			return;

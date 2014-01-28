@@ -32,7 +32,7 @@ public class MatchCmd {
 		//experimental commands
 		"var_dump","_makenpc","_force","_setupdebug"
 	};
-	public static void charaupdate(Character c, String phrase) {
+	public static void charaupdate(Character c, String phrase, byte[] data) {
 		String[] ephrase = phrase.split(" ");
 		//int[] intPhrase = new int[ephrase.length];
 		//int loop = 0;
@@ -45,7 +45,7 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void endmatch(Character c, String phrase){
+	public static void endmatch(Character c, String phrase, byte[] data){
 		Match m = c.getMatch();
 		if(c.getEID() == m.getHostId()){
 			if(m.getPhaseMain()==Constants.PHASEMAIN_SETUP){//check if in setup mode
@@ -55,23 +55,23 @@ public class MatchCmd {
 		}
 		return;
 	}
-	public static void gamestart(Character c, String phrase){
+	public static void gamestart(Character c, String phrase, byte[] data){
 		Match m = c.getMatch();
 		if(c.getEID() == m.getHostId()){
 			m.gameStart();
 		}
 	}
-	public static void gamecancel(Character c, String phrase){
+	public static void gamecancel(Character c, String phrase, byte[] data){
 		Match m = c.getMatch();
 		if(c.getEID() == m.getHostId()){
 			c.getMatch().gameCancel();
 		}
 	}
-	public static void getsetting(Character c, String phrase){//TODO need to set cmdCompile
+	public static void getsetting(Character c, String phrase, byte[] data){//TODO need to set cmdCompile
 		Match m = c.getMatch();
 		c.send(CmdCompile.matchSettings(m));
 	}
-	public static void leave(Character c, String phrase){
+	public static void leave(Character c, String phrase, byte[] data){
 		if(c.getMatch().getPhaseMain()==Constants.PHASEMAIN_SETUP || c.getMatch().getPhaseMain()==Constants.PHASEMAIN_ENDGAME){//if in setup or endgame
 			c.leaveMatch();
 			//c.send(CmdCompile.closeLayer("matchSetup"));//remove lobby chat and list
@@ -81,14 +81,14 @@ public class MatchCmd {
 			c.send(CmdCompile.chatScreen("You can't just leave in the middle of a game!"));
 		}
 	}
-	public static void name(Character c, String phrase){
+	public static void name(Character c, String phrase, byte[] data){
 		Match m = c.getMatch();
 		//$matchid = $match->getMatchID();
 		if(m.getPhaseMain()==Constants.PHASEMAIN_NAMING){//checking naming
 			m.chooseName(c.getPlayerNum(),phrase);
 		}
 	}
-	public static void orderofop(Character c, String phrase){
+	public static void orderofop(Character c, String phrase, byte[] data){
 		//-orderofop (parameters)
 		//(parameters):
 		//	list	- lists current roles in the possibily array
@@ -119,12 +119,12 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void refresh(Character c, String phrase) {//shall depend on game phase as well..
-		refreshplist(c, phrase);
-		if(c.getMatch().getPhaseMain() == Constants.PHASEMAIN_SETUP){getsetting(c, phrase);}//if in setup, show settings
+	public static void refresh(Character c, String phrase, byte[] data) {//shall depend on game phase as well..
+		refreshplist(c, phrase, null);
+		if(c.getMatch().getPhaseMain() == Constants.PHASEMAIN_SETUP){getsetting(c, phrase, null);}//if in setup, show settings
 		return;
 	}
-	public static void refreshplist(Character c, String phrase) {//get player list
+	public static void refreshplist(Character c, String phrase, byte[] data) {//get player list
 		if(c.getMatch().getPhaseMain() != Constants.PHASEMAIN_INPLAY){//as long as not playing
 			List<Character> charas = c.getMatch().getCharacterList();//c.getLobby().getPlayerList();
 			for(Character chara:charas){
@@ -137,7 +137,7 @@ public class MatchCmd {
 			c.send(CmdCompile.refreshDeadList(c.getMatch(),c.getMatch().getDeadList()));//refresh graveyard
 		}
 	}
-	public static void rolespossible(Character c, String phrase){
+	public static void rolespossible(Character c, String phrase, byte[] data){
 		//-rolepossible (parameters)
 		//(parameters):
 		//	list - lists current roles in the possibily array
@@ -182,7 +182,7 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void rolesetup(Character c, String phrase){
+	public static void rolesetup(Character c, String phrase, byte[] data){
 		//-rolesetup (parameters)
 		//(parameters):
 		//	list - lists current roles in the setup
@@ -240,7 +240,7 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void rolesearch(Character c, String phrase){
+	public static void rolesearch(Character c, String phrase, byte[] data){
 		//lets user search database for roles...
 		//XXX how many roles to show at a time? 10 for now
 		//-rolesearch (aff) (cat) (page)
@@ -258,7 +258,7 @@ public class MatchCmd {
 
 		}
 	}
-	public static void roleview(Character c, String phrase){
+	public static void roleview(Character c, String phrase, byte[] data){
 		//-roleview (id) - attempt to view the role by id number
 		String[] ephrase = phrase.split(" ");
 		if(StringFunctions.isInteger(ephrase[0])){
@@ -276,7 +276,7 @@ public class MatchCmd {
 		}
 	}
 
-	public static void say(Character c, String phrase){
+	public static void say(Character c, String phrase, byte[] data){
 		//later will add a wholoe chat channel function that this
 		if(c.getMatch().getPhaseMain() != Constants.PHASEMAIN_INPLAY){//normal talk while no in play
 			c.getMatch().send(phrase,"roomSay",c);
@@ -286,7 +286,7 @@ public class MatchCmd {
 			c.getMatch().chatter(c.getPlayerNum(), phrase);
 		}
 	}
-	public static void setting(Character c, String phrase){//sets all the options for a match..before starting
+	public static void setting(Character c, String phrase, byte[] data){//sets all the options for a match..before starting
 		Match m = c.getMatch();
 		//need to make host checks
 		String[] ephrase = phrase.split(" ");
@@ -301,7 +301,7 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void target1(Character c, String phrase){//TODO Targets need to be targetable
+	public static void target1(Character c, String phrase, byte[] data){//TODO Targets need to be targetable
 		Match m = c.getMatch();
 		//m.Game.Base.Console.debug("entered a target1");
 		if(m.getPhaseMain()==Constants.PHASEMAIN_INPLAY && StringFunctions.isInteger(phrase)){
@@ -318,7 +318,7 @@ public class MatchCmd {
 			}catch(Exception e){m.Game.Base.Console.printStackTrace(e);}
 		}
 	}
-	public static void target2(Character c, String phrase){//TODO Targets need to be targetable
+	public static void target2(Character c, String phrase, byte[] data){//TODO Targets need to be targetable
 		Match m = c.getMatch();
 		//m.Game.Base.Console.debug("entered a target2");
 		if(m.getPhaseMain()==Constants.PHASEMAIN_INPLAY && StringFunctions.isInteger(phrase)){
@@ -336,15 +336,15 @@ public class MatchCmd {
 		}
 	}
 
-	public static void quit(Character c, String phrase) {//dissconnecting command
+	public static void quit(Character c, String phrase, byte[] data) {//dissconnecting command
 		c.setOffline();
 	}
-	public static void vote(Character c, String phrase){
+	public static void vote(Character c, String phrase, byte[] data){
 		c.getMatch().votePlayer(c.getPlayerNum(), Integer.parseInt(phrase));
 	}
 	//DEBUGGING //
 
-	public static void var_dump(Character c, String phrase){
+	public static void var_dump(Character c, String phrase, byte[] data){
 		if(c.getUsergroup().getName().equals("Administrator")){
 			c.Game.Base.Console.warning("");
 			c.Game.Base.Console.warning("    ==== Variable Dump ====");
@@ -368,7 +368,7 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void _makenpc(Character c, String phrase){//testing making a npc
+	public static void _makenpc(Character c, String phrase, byte[] data){//testing making a npc
 		if(c.getUsergroup().getName().equals("Administrator")){
 			Match match = c.getMatch();
 			if(match.getNumChars() < match.getSetting("max_chars")){//if theres room in the match
@@ -384,7 +384,7 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void _force(Character c, String phrase){//testing if har targetable
+	public static void _force(Character c, String phrase, byte[] data){//testing if har targetable
 		if(c.getUsergroup().getName().equals("Administrator")){
 			String message = "";
 			String defaultNONE = "Force error";
@@ -405,7 +405,7 @@ public class MatchCmd {
 								new_phrase = ephrase[1].split(" ",2);//command-everything else
 							}
 							else{new_phrase[0] = ephrase[1];}
-							CmdHandler.processCmd(target, new_phrase[0], new_phrase[1]);
+							CmdHandler.processCmd(target, new_phrase[0], new_phrase[1], null);
 							message = "Forcing "+target.getName()+" to do a '"+new_phrase[0]+"' command...";
 
 						}
@@ -425,7 +425,7 @@ public class MatchCmd {
 								new_phrase = ephrase[1].split(" ",2);//command-everything else
 							}
 							else{new_phrase[0] = ephrase[1];}
-							CmdHandler.processCmd(target, new_phrase[0], new_phrase[1]);
+							CmdHandler.processCmd(target, new_phrase[0], new_phrase[1], null);
 							message = "Forcing "+target.getName()+"("+target.getMatch().getPlayer(target.getPlayerNum()).getName()+") to do a '"+new_phrase[0]+"' command...";
 						}
 						else{message = defaultNONE;}
@@ -448,15 +448,15 @@ public class MatchCmd {
 			}
 		}
 	}
-	public static void _setupdebug(Character c, String phrase){//testing making a npc
+	public static void _setupdebug(Character c, String phrase, byte[] data){//testing making a npc
 		if(c.getUsergroup().getName().equals("Administrator")){
 			Match m =c.getMatch();
 			m.send(CmdCompile.chatScreen("Setting up room for a debug run!"));
 			for(int i = (m.getSetting("max_chars")-m.getNumChars()); i > 0; i--){
-				CmdHandler.processCmd(c, "-_makenpc", null);
+				CmdHandler.processCmd(c, "-_makenpc", null, null);
 			}
 			for(int i = (m.getSetting("max_chars")-m.getRoleSetup().size()); i > 0; i--){
-				CmdHandler.processCmd(c, "-rolesetup", "add TOWN CORE");
+				CmdHandler.processCmd(c, "-rolesetup", "add TOWN CORE", null);
 			}
 		}
 	}

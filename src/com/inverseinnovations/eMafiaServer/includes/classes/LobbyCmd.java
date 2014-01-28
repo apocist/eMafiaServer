@@ -28,7 +28,7 @@ public class LobbyCmd {
 		//experimental commands
 		"test","var_dump"
 	};
-	public static void charaupdate(Character c, String phrase) {
+	public static void charaupdate(Character c, String phrase, byte[] data) {
 		String[] ephrase = phrase.split(" ");
 		//int[] intPhrase = new int[ephrase.length];
 		//int loop = 0;
@@ -41,7 +41,7 @@ public class LobbyCmd {
 			}
 		}
 	}
-	public static void match(Character c, String phrase) {
+	public static void match(Character c, String phrase, byte[] data) {
 		String[] ephrase = phrase.split(" ");
 		Map<Integer, Match> matchs = c.Game.getMatchs();
 		Match match;
@@ -66,16 +66,16 @@ public class LobbyCmd {
 			}
 			else if(ephrase[0].equals("create")){
 				match = new Match(c.Game, "New Match");
-				LobbyCmd.match(c, "join "+match.getEID());
+				LobbyCmd.match(c, "join "+match.getEID(), null);
 			}
 		}
 	}
-	public static void refresh(Character c, String phrase) {
-		refreshplist(c, phrase);
-		match(c, "list");
+	public static void refresh(Character c, String phrase, byte[] data) {
+		refreshplist(c, phrase, null);
+		match(c, "list", null);
 		return;
 	}
-	public static void refreshplist(Character c, String phrase) {//get player list
+	public static void refreshplist(Character c, String phrase, byte[] data) {//get player list
 		List<Character> charas = c.getLobby().getPlayerList();
 		for(Character chara:charas){
 			c.send(CmdCompile.charaUpdate(chara));
@@ -83,16 +83,16 @@ public class LobbyCmd {
 		c.send(CmdCompile.refreshPList(charas));
 		return;
 	}
-	public static void say(Character c, String phrase){//need to remove..copyrighted
+	public static void say(Character c, String phrase, byte[] data){//need to remove..copyrighted
 		//later will add a wholoe chat channel function that this
 		c.getLobby().send(phrase,"roomSay",c);
 		return;
 	}
-	public static void quit(Character c, String phrase) {//dissconnecting command
+	public static void quit(Character c, String phrase, byte[] data) {//dissconnecting command
 		c.setOffline();
 		return;
 	}
-	public static void var_dump(Character c, String phrase){
+	public static void var_dump(Character c, String phrase, byte[] data){
 		c.Game.Base.Console.warning("");
 		c.Game.Base.Console.warning("    ==== Variable Dump ====");
 		c.Game.Base.Console.warning("  --- Client Connections ---");
