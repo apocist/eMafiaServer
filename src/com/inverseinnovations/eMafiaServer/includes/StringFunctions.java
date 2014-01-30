@@ -3,6 +3,10 @@ GNU GENERAL PUBLIC LICENSE V3
 Copyright (C) 2012  Matthew 'Apocist' Davis */
 package com.inverseinnovations.eMafiaServer.includes;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
@@ -229,6 +233,34 @@ public class StringFunctions {
 	 */
 	public static String substrLastChar(String str, int length){
 		return str.substring(str.length()-(1*length));
+	}
+	//Doesn't really belong in this area...but for later I can change it..
+	/**Converts bytes to an Object*/
+	public static Object byteToObject(byte[] bytes){
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		ObjectInput in = null;
+		Object object = null;
+		try {
+			try {
+				in = new ObjectInputStream(bis);
+				object = in.readObject();
+			}
+			catch (IOException e){e.printStackTrace();}
+			catch (ClassNotFoundException e){e.printStackTrace();}
+		}
+		finally{
+		try{
+			bis.close();
+		}
+		catch(IOException e){e.printStackTrace();}
+		try{
+			if(in != null){
+			  in.close();
+			}
+		}
+		catch(IOException e){e.printStackTrace();}
+		}
+		return object;
 	}
 //////////////////
 ////HTML Edits////

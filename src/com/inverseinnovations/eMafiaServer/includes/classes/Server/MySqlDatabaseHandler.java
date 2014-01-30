@@ -13,6 +13,7 @@ import com.inverseinnovations.eMafiaServer.*;
 import com.inverseinnovations.eMafiaServer.includes.*;
 import com.inverseinnovations.eMafiaServer.includes.classes.*;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.*;
+import com.inverseinnovations.sharedObjects.RoleData;
 
 /**Manages database interaction*/
 public class MySqlDatabaseHandler {
@@ -93,7 +94,7 @@ public class MySqlDatabaseHandler {
 		//else{echo "NO RESULTS\n";return FALSE;}
 	}
 	/**
-	 * Fetch Role from Database.<br>
+	 * Fetch Role from Database
 	 * @param id database id
 	 * @return null upon error or role not found
 	 */
@@ -105,7 +106,6 @@ public class MySqlDatabaseHandler {
 			st = con.prepareStatement("SELECT * FROM roles WHERE id = ?");
 			st.setInt(1, id);
 			rs = st.executeQuery();
-			//rs = st.executeQuery( "SELECT * FROM roles WHERE id = '"+id+"'");
 			if(rs.next()){ // If match.
 					if(rs.getString("setup").equals("DEFAULT")){
 						setup = Constants.TYPE_GAMEOB_ROLE_DEFAULT;
@@ -115,10 +115,6 @@ public class MySqlDatabaseHandler {
 					category[0] = rs.getString("cat1");
 					category[1] = rs.getString("cat2");
 
-					/*$role = new Role($row['id'],$row['name'],$setup,$row['affiliation'],$category);
-					if(!empty($row['nightaction'])){
-						$role->createRoleFunction('nightAction',$row['nightaction']);
-					}*/
 					role = new Role(null, rs.getInt("id"),rs.getString("name"),setup,rs.getString("affiliation"), category);//,category);
 					role.setVersion(rs.getInt("version"));
 					if(rs.getInt("teamWin") == 1){
@@ -129,7 +125,6 @@ public class MySqlDatabaseHandler {
 						if(rs.getInt("chatAtNight") == 1){}//TODO
 					}
 
-					//role.setActionOrder(rs.getInt("actionorder"));
 					role.setActionCat(rs.getString("actionCat"));
 					if(StringUtils.isNotEmpty(rs.getString("victoryCon"))){role.setScript("victoryCon", rs.getString("victoryCon"));}
 					if(StringUtils.isNotEmpty(rs.getString("mayGameEndCon"))){role.setScript("mayGameEndCon", rs.getString("mayGameEndCon"));}
@@ -155,6 +150,74 @@ public class MySqlDatabaseHandler {
 		}
 		catch (SQLException e){Base.Console.severe("GrabRole error");Base.Console.printStackTrace(e);}
 		return role;
+	}
+	public boolean insertRole(RoleData role, int version){
+		boolean theReturn = false;
+		if(role != null){
+			try {
+				st = con.prepareStatement("INSERT INTO roles (name, version) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+				st.setString(1, role.name);
+				st.setInt(1, version);
+				st.executeUpdate();
+
+				//get the last auto_inc id
+				ResultSet rs = st.getGeneratedKeys();
+				rs.next();
+				int id = rs.getInt(1);
+				st = con.prepareStatement("INSERT INTO roles (setup, affiliation, cat1, cat2, onTeam, teamName, teamWin, visibleTeam, chatAtNight, actionCat, targetsN1, targetsN2, targetsD1, targetsD2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE id = ?");
+				st.setString(1, "CUSTOM");
+				st.setString(2, role.affiliation);
+				if(role.category != null){
+					if(role.category.length >= 1){
+						st.setString(4, role.category[0]);
+						if(role.category.length >= 2){
+							st.setString(5, role.category[1]);
+						}
+					}
+				}
+				int onTeam = 0;
+				if(role.onTeam){onTeam = 1;}
+				st.setInt(5, onTeam);
+				st.setString(6, role.teamName);
+				int teamWin = 0;
+				if(role.teamWin){teamWin = 1;}
+				st.setInt(7, teamWin);
+				int visibleTeam = 0;
+				if(role.visibleTeam){visibleTeam = 1;}
+				st.setInt(8, visibleTeam);
+				int chatAtNight = 0;
+				if(role.chatAtNight){chatAtNight = 1;}
+				st.setInt(9, chatAtNight);
+				st.setString(10, role.actionCat);
+				st.setInt(11, role.targetablesNight1);
+				st.setInt(12, role.targetablesNight2);
+				st.setInt(13, role.targetablesDay1);
+				st.setInt(14, role.targetablesDay2);
+				st.setInt(15, id);
+				st.executeUpdate();
+
+				List<String> events = Arrays.asList("onStartup", "onDayStart", "onDayTargetChoice", "onDayEnd", "onNightStart", "onNightTargetChoice", "onNightEnd", "onVisit", "onAttacked", "onLynch", "onDeath", "victoryCon", "mayGameEndCon");
+				for(String event : role.ersScript.keySet()){
+					if(events.contains(event)){
+						if(!role.ersScript.get(event).isEmpty()){
+							st = con.prepareStatement("INSERT INTO roles (?) VALUES (?) WHERE id = ?");
+							st.setString(1, event);
+							st.setString(2, role.ersScript.get(event));
+							st.setInt(3, id);
+							st.executeUpdate();
+						}
+					}
+					else{
+						//TODO save as a custom event
+					}
+				}
+				theReturn = true;
+			}
+			catch (SQLException e) {
+				Base.Console.severe("Error in insertRole");
+			}
+		}
+		return theReturn;
 	}
 	/**
 	 * Returns list of possible roles fitting the parameters provided.<br>

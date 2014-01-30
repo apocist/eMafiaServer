@@ -16,6 +16,7 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Lobby;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Match;
 import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.Role;
 import com.inverseinnovations.eMafiaServer.includes.classes.Server.SocketClient;
+import com.inverseinnovations.sharedObjects.RoleData;
 
 /**
  * Provides list of all commands a Character may call when inside a Match<br>
@@ -135,6 +136,25 @@ public class MatchCmd {
 		else{
 			c.send(CmdCompile.refreshAliveList(c.getMatch().getAliveList()));//refresh living players
 			c.send(CmdCompile.refreshDeadList(c.getMatch(),c.getMatch().getDeadList()));//refresh graveyard
+		}
+	}
+	public static void roleedit(Character c, String phrase, byte[] data){
+		//-roleupdate (id) - attempt to edit a role
+		if(data != null){
+			Object objData = StringFunctions.byteToObject(data);
+			if(objData instanceof RoleData){
+				if(((RoleData)objData).id > 0){
+					Role role = c.Game.Base.MySql.grabRole(((RoleData)objData).id);
+					if(role != null){
+						if(c.Game.Base.MySql.insertRole(((RoleData)objData), role.getVersion()+1)){
+							c.Game.Base.Console.info("Role Edited: "+role.getName());
+						}
+						else{
+							c.Game.Base.Console.warning("Role Edit of "+role.getName()+" failed!");
+						}
+					}
+				}
+			}
 		}
 	}
 	public static void rolespossible(Character c, String phrase, byte[] data){
