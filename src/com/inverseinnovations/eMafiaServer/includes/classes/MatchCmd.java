@@ -26,7 +26,7 @@ public class MatchCmd {
 	public static String[] CMDLIST = {
 		//basic commands
 		//"help","look","match",
-		"charaupdate","endmatch","gamestart","gamecancel","getsetting","leave","name","orderofop","refresh","refreshplist","rolespossible","rolesetup", "rolesearch","roleview",
+		"charaupdate","endmatch","gamestart","gamecancel","getsetting","leave","name","orderofop","refresh","refreshplist","roleedit","rolespossible","rolesetup", "rolesearch","roleview",
 		"say","setting","target1","target2","quit","vote",
 		//admin commands
 		//"_show_commands","_shutdown","timer_add","_setupbots","_makenpc","_force"
@@ -152,10 +152,11 @@ public class MatchCmd {
 						else{
 							c.Game.Base.Console.warning("Role Edit of "+role.getName()+" failed!");
 						}
-					}
+					}else{c.Game.Base.Console.debug("Role didn't already exist");}
 				}
-			}
+			}else{c.Game.Base.Console.debug("Data was not RoleData");}
 		}
+		else{c.Game.Base.Console.debug("Data was null");}
 	}
 	public static void rolespossible(Character c, String phrase, byte[] data){
 		//-rolepossible (parameters)

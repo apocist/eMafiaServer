@@ -41,6 +41,16 @@ public class MySqlDatabaseHandler {
 
 			//Base.Console.debug(BCrypt.gensalt());
 		}
+		catch(SQLException e){
+			Base.program_faults++;
+			if(e.getSQLState().equals("28000")){
+				Base.Console.severe("MySQL DB username/password incorrect, cannot connect. Server will not run correctly!");
+			}
+			else{
+				Base.Console.severe("MySQL DB failed to connect, server will not run correctly!");
+				Base.Console.printStackTrace(e);
+			}
+		}
 		catch (Exception e) {
 			Base.program_faults++;
 			Base.Console.severe("MySQL DB failed to connect, server will not run correctly!");
@@ -157,23 +167,34 @@ public class MySqlDatabaseHandler {
 			try {
 				st = con.prepareStatement("INSERT INTO roles (name, version) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
 				st.setString(1, role.name);
-				st.setInt(1, version);
+				st.setInt(2, version);
 				st.executeUpdate();
 
 				//get the last auto_inc id
 				ResultSet rs = st.getGeneratedKeys();
 				rs.next();
 				int id = rs.getInt(1);
-				st = con.prepareStatement("INSERT INTO roles (setup, affiliation, cat1, cat2, onTeam, teamName, teamWin, visibleTeam, chatAtNight, actionCat, targetsN1, targetsN2, targetsD1, targetsD2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE id = ?");
+				st = con.prepareStatement("UPDATE roles SET setup=?, affiliation=?, cat1=?, cat2=?, onTeam=?, teamName=?, teamWin=?, visibleTeam=?, chatAtNight=?, actionCat=?, targetsN1=?, targetsN2=?, targetsD1=?, targetsD2=? WHERE id = ?");
 				st.setString(1, "CUSTOM");
 				st.setString(2, role.affiliation);
 				if(role.category != null){
 					if(role.category.length >= 1){
-						st.setString(4, role.category[0]);
+						st.setString(3, role.category[0]);
 						if(role.category.length >= 2){
-							st.setString(5, role.category[1]);
+							st.setString(4, role.category[1]);
+						}
+						else{
+							st.setString(4, null);
 						}
 					}
+					else{
+						st.setString(3, null);
+						st.setString(4, null);
+					}
+				}
+				else{
+					st.setString(3, null);
+					st.setString(4, null);
 				}
 				int onTeam = 0;
 				if(role.onTeam){onTeam = 1;}
@@ -200,10 +221,11 @@ public class MySqlDatabaseHandler {
 				for(String event : role.ersScript.keySet()){
 					if(events.contains(event)){
 						if(!role.ersScript.get(event).isEmpty()){
-							st = con.prepareStatement("INSERT INTO roles (?) VALUES (?) WHERE id = ?");
-							st.setString(1, event);
-							st.setString(2, role.ersScript.get(event));
-							st.setInt(3, id);
+							//st = con.prepareStatement("UPDATE roles SET ?=? WHERE id = ?");
+							st = con.prepareStatement("UPDATE roles SET "+event+"=? WHERE id = ?");
+							//st.setString(1, event);
+							st.setString(1, role.ersScript.get(event));
+							st.setInt(2, id);
 							st.executeUpdate();
 						}
 					}
@@ -215,6 +237,7 @@ public class MySqlDatabaseHandler {
 			}
 			catch (SQLException e) {
 				Base.Console.severe("Error in insertRole");
+				Base.Console.printStackTrace(e);
 			}
 		}
 		return theReturn;
@@ -227,6 +250,7 @@ public class MySqlDatabaseHandler {
 	 * @param page page row of 10
 	 */
 	public ArrayList<Role> searchRoles(String aff, String cat, int page){
+		//FIXME after setting MySQL's default values...been unable to pull ANY ANY
 		ArrayList<Role> list = new ArrayList<Role>();
 		//Role role = null;
 		page--;page = page*10;

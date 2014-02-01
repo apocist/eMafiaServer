@@ -249,7 +249,7 @@ public class SC2MafiaAPI extends Thread{
 				theReturn = (String) response.get("custom");
 			}
 		}
-		Base.Console.debug("SC2Mafia API return error: "+theReturn);
+		//Base.Console.debug("SC2Mafia API return error: "+theReturn);
 		return theReturn;
 	}
 	/**Login using the Game Master credientals*/
