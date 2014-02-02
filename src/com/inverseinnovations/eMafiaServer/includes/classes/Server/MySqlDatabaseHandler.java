@@ -161,11 +161,37 @@ public class MySqlDatabaseHandler {
 		catch (SQLException e){Base.Console.severe("GrabRole error");Base.Console.printStackTrace(e);}
 		return role;
 	}
-	public boolean insertRole(RoleData role, int version){
+	/**
+	 * Creates new role in database
+	 * @param role
+	 * @param setup an aproval based system for later
+	 * @return success
+	 */
+	public boolean insertRole(RoleData role, String setup){
+		return addEditRole(role,true,1,setup);
+	}
+	/**
+	 * Updates an existing role in database
+	 * @param role
+	 * @param setup an aproval based system for later
+	 * @return success
+	 */
+	public boolean updateRole(RoleData role, int currentVersion, String setup){
+		return addEditRole(role,false,currentVersion+1,setup);
+	}
+	public boolean addEditRole(RoleData role, boolean newRole, int version, String setup){
 		boolean theReturn = false;
 		if(role != null){
 			try {
-				st = con.prepareStatement("INSERT INTO roles (name, version) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+				int id = 0;
+				if(newRole){//create new
+					st = con.prepareStatement("INSERT INTO roles (name, version) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+				}
+				else{//update existing
+					st = con.prepareStatement("UPDATE roles SET name=?, version=? WHERE id= ?", Statement.RETURN_GENERATED_KEYS);
+					st.setInt(3, role.id);
+					id = role.id;
+				}
 				st.setString(1, role.name);
 				st.setInt(2, version);
 				st.executeUpdate();
@@ -173,7 +199,7 @@ public class MySqlDatabaseHandler {
 				//get the last auto_inc id
 				ResultSet rs = st.getGeneratedKeys();
 				rs.next();
-				int id = rs.getInt(1);
+				if(newRole){id = rs.getInt(1);}
 				st = con.prepareStatement("UPDATE roles SET setup=?, affiliation=?, cat1=?, cat2=?, onTeam=?, teamName=?, teamWin=?, visibleTeam=?, chatAtNight=?, actionCat=?, targetsN1=?, targetsN2=?, targetsD1=?, targetsD2=? WHERE id = ?");
 				st.setString(1, "CUSTOM");
 				st.setString(2, role.affiliation);

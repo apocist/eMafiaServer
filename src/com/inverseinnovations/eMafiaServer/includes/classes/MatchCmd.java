@@ -26,7 +26,7 @@ public class MatchCmd {
 	public static String[] CMDLIST = {
 		//basic commands
 		//"help","look","match",
-		"charaupdate","endmatch","gamestart","gamecancel","getsetting","leave","name","orderofop","refresh","refreshplist","roleedit","rolespossible","rolesetup", "rolesearch","roleview",
+		"charaupdate","endmatch","gamestart","gamecancel","getsetting","leave","name","orderofop","refresh","refreshplist","rolecreate","roleedit","rolespossible","rolesetup", "rolesearch","roleview",
 		"say","setting","target1","target2","quit","vote",
 		//admin commands
 		//"_show_commands","_shutdown","timer_add","_setupbots","_makenpc","_force"
@@ -138,25 +138,38 @@ public class MatchCmd {
 			c.send(CmdCompile.refreshDeadList(c.getMatch(),c.getMatch().getDeadList()));//refresh graveyard
 		}
 	}
+	public static void rolecreate(Character c, String phrase, byte[] data){
+		//-rolecreate) - attempt to create a new role
+		if(data != null){
+			Object objData = StringFunctions.byteToObject(data);
+			if(objData instanceof RoleData){
+				if(c.Game.Base.MySql.insertRole(((RoleData)objData), "CUSTOM")){
+					c.Game.Base.Console.info("Role Created: "+((RoleData)objData).name);
+				}
+				else{
+					c.Game.Base.Console.warning("Role Creation of "+((RoleData)objData).name+" failed!");
+				}
+			}
+		}
+	}
 	public static void roleedit(Character c, String phrase, byte[] data){
-		//-roleupdate (id) - attempt to edit a role
+		//-roleedit - attempt to edit a role
 		if(data != null){
 			Object objData = StringFunctions.byteToObject(data);
 			if(objData instanceof RoleData){
 				if(((RoleData)objData).id > 0){
 					Role role = c.Game.Base.MySql.grabRole(((RoleData)objData).id);
 					if(role != null){
-						if(c.Game.Base.MySql.insertRole(((RoleData)objData), role.getVersion()+1)){
+						if(c.Game.Base.MySql.updateRole(((RoleData)objData), role.getVersion(), "CUSTOM")){
 							c.Game.Base.Console.info("Role Edited: "+role.getName());
 						}
 						else{
 							c.Game.Base.Console.warning("Role Edit of "+role.getName()+" failed!");
 						}
-					}else{c.Game.Base.Console.debug("Role didn't already exist");}
+					}
 				}
-			}else{c.Game.Base.Console.debug("Data was not RoleData");}
+			}
 		}
-		else{c.Game.Base.Console.debug("Data was null");}
 	}
 	public static void rolespossible(Character c, String phrase, byte[] data){
 		//-rolepossible (parameters)
