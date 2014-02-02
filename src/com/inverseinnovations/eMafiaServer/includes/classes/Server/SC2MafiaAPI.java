@@ -62,7 +62,8 @@ public class SC2MafiaAPI extends Thread{
 		this.clientname = clientname;
 		this.clientversion = clientversion;
 		this.setName("SC2MafiaAPI");
-		this.run();
+		//this.run();
+		this.start();
 	}
 	public void run(){
 		Properties props = System.getProperties();

@@ -16,7 +16,7 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.*;
 import com.inverseinnovations.sharedObjects.RoleData;
 
 /**Manages database interaction*/
-public class MySqlDatabaseHandler {
+public class MySqlDatabaseHandler extends Thread{
 	public Base Base;
 
 	private Connection con = null;
@@ -24,19 +24,31 @@ public class MySqlDatabaseHandler {
 	private ResultSet rs = null;
 
 	/**
-	 * Creates instance and connects to defined MySQL Database
+	 * Creates instance for MySQL database references
+	 */
+	public MySqlDatabaseHandler(Base base){
+		this.Base = base;
+		this.start();
+	}
+	public void run(){
+		this.init(Base.Settings.MYSQL_URL, Base.Settings.MYSQL_USER, Base.Settings.MYSQL_PASS);
+	}
+	/**
+	 * Initilizes and connects to defined MySQL Database
 	 * @param url e.g. jdbc:mysql://localhost:3306/testdb
 	 * @param user DB username
 	 * @param password DB password
 	 */
-	public MySqlDatabaseHandler(Base base, String url, String user, String password){
-		this.Base = base;
+	public void init(String url, String user, String password){
 		try {
 			Class.forName("com.mysql.jdbc.Driver");//.newInstance();
 			con = DriverManager.getConnection(url, user, password);
 			//st = con.createStatement();
 
-			if(con != null){Base.Console.config("MySQL DB connected to "+url+"");}
+			if(con != null){
+				Base.Console.config("MySQL DB connected to "+url+"");
+				Base.mysqlReady();
+			}
 			else{Base.program_faults++;Base.Console.severe("MySQL DB failed to connect, server will not run correctly!");}
 
 			//Base.Console.debug(BCrypt.gensalt());
@@ -57,7 +69,6 @@ public class MySqlDatabaseHandler {
 			Base.Console.printStackTrace(e);
 
 		}
-
 	}
 	/**
 	 * Loads all Usergroups into the game(If usergroups change and are reloaded, there might be some issues)
