@@ -141,30 +141,4 @@ public class Game {
 	public SocketClient getConnection(int id){
 		return Base.Server.getClient(id);
 	}
-	/**
-	 * Sets if the game is online or offline. Setting this to false will make the application close
-	 * @param state false = offline/true = online
-	 */
-	public void setGameRunning(boolean state){
-		this.GAME_IS_RUNNING = state;
-	}
-	/**
-	 * Is the game even on? Value change from setGameRunning
-	 */
-	public boolean isRunning(){
-		return this.GAME_IS_RUNNING;
-	}
-	/**
-	 * Set is game is accepting play input
-	 * @param state false = not paused/true = paused
-	 */
-	public void setGamePaused(boolean state){
-		this.GAME_PAUSED = state;
-	}
-	/**
-	 * Is the game accept player input?
-	 */
-	public boolean isPaused(){
-		return this.GAME_PAUSED;
-	}
 }

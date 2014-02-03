@@ -9,6 +9,7 @@ import com.inverseinnovations.eMafiaServer.includes.classes.GameObjects.*;
 import com.inverseinnovations.eMafiaServer.includes.classes.Server.*;
 
 public class Base {
+	private boolean GAME_IS_RUNNING = true;
 	public int program_faults = 0;
 	public Console Console = new Console(this);
 	public Settings Settings = new Settings(this);
@@ -20,7 +21,7 @@ public class Base {
 	public Base(){
 		//This is just to keep the server running
 		synchronized(this){
-			while (Game.isRunning()){
+			while (GAME_IS_RUNNING){
 				try {
 					this.wait();
 				}
@@ -48,7 +49,6 @@ public class Base {
 			new Match(Game, "A First Match");
 			new Match(Game, "Another Match");
 			Server.listen();//should only be called once
-			Game.setGamePaused(false);//game is now unpaused and ready to play
 
 			Console.config("eMafia Server "+Constants.VERSION+" is now up and running!");
 		}
@@ -60,10 +60,9 @@ public class Base {
 	 * Immediatly closes the program
 	 */
 	public synchronized void shutdown(){
-		Game.setGameRunning(false);
+		GAME_IS_RUNNING = false;
 		this.notify();
 	}
-
 	public static void main(String[] args) {
 		Base eMafiaServer = new Base();
 	}
