@@ -108,14 +108,12 @@ public class Console extends Frame{
 		add(scrollpane);
 
 		addWindowListener(
-			   new WindowAdapter(){
-				   public void windowClosing(WindowEvent e){
-					   warning("Server closed insecurely by admin clicking X, be sure to use proper methods next time.");
-					   //save the log here
-					   Base.Game.setGameRunning(false);
-					   //System.exit(0);
-				   }
-			  }
+			new WindowAdapter(){
+				public void windowClosing(WindowEvent e){
+					warning("Server closed insecurely by admin clicking X, be sure to use proper methods next time.");
+					Base.shutdown();
+				}
+			}
 		);
 		setVisible(true);
 	}

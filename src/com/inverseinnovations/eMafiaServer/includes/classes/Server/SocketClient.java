@@ -44,6 +44,7 @@ public class SocketClient extends Thread{
 		this.socket = socket;
 		this.Server = server;
 		this.setName("Client "+id+" Socket "+socket);
+		this.setDaemon(true);
 	}
 	/**
 	 * Sets the Client to continue reading

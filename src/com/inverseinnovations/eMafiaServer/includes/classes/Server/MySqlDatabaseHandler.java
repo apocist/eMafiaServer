@@ -28,6 +28,8 @@ public class MySqlDatabaseHandler extends Thread{
 	 */
 	public MySqlDatabaseHandler(Base base){
 		this.Base = base;
+		this.setName("MySQL");
+		this.setDaemon(true);
 		this.start();
 	}
 	public void run(){
@@ -39,19 +41,15 @@ public class MySqlDatabaseHandler extends Thread{
 	 * @param user DB username
 	 * @param password DB password
 	 */
-	public void init(String url, String user, String password){
+	private void init(String url, String user, String password){
 		try {
 			Class.forName("com.mysql.jdbc.Driver");//.newInstance();
 			con = DriverManager.getConnection(url, user, password);
-			//st = con.createStatement();
 
 			if(con != null){
 				Base.Console.config("MySQL DB connected to "+url+"");
-				Base.mysqlReady();
 			}
 			else{Base.program_faults++;Base.Console.severe("MySQL DB failed to connect, server will not run correctly!");}
-
-			//Base.Console.debug(BCrypt.gensalt());
 		}
 		catch(SQLException e){
 			Base.program_faults++;
@@ -68,6 +66,9 @@ public class MySqlDatabaseHandler extends Thread{
 			Base.Console.severe("MySQL DB failed to connect, server will not run correctly!");
 			Base.Console.printStackTrace(e);
 
+		}
+		finally{
+			Base.mysqlReady();
 		}
 	}
 	/**
@@ -184,13 +185,22 @@ public class MySqlDatabaseHandler extends Thread{
 	/**
 	 * Updates an existing role in database
 	 * @param role
+	 * @param currentVersion the roles version before updating
 	 * @param setup an aproval based system for later
 	 * @return success
 	 */
 	public boolean updateRole(RoleData role, int currentVersion, String setup){
 		return addEditRole(role,false,currentVersion+1,setup);
 	}
-	public boolean addEditRole(RoleData role, boolean newRole, int version, String setup){
+	/**
+	 * Either creates a new or updates an existing role
+	 * @param role
+	 * @param newRole if creating or updating
+	 * @param version version number that is going to be saved
+	 * @param setup an aproval based system for later
+	 * @return success
+	 */
+	private boolean addEditRole(RoleData role, boolean newRole, int version, String setup){
 		boolean theReturn = false;
 		if(role != null){
 			try {

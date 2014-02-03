@@ -97,6 +97,7 @@ public class SocketServer {
 			this.Server = server;
 			this.setName("Client Listener");
 			this.setPriority(4);//below normal
+			this.setDaemon(true);
 		}
 
 		public void run(){

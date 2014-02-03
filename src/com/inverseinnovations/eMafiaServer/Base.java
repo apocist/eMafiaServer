@@ -18,21 +18,25 @@ public class Base {
 	public Game Game = new Game(this);
 
 	public Base(){
-
 		//This is just to keep the server running
-		while (Game.isRunning()){
-			try {
-				Thread.sleep(2000);//2 secs, so the server checks if its to end every 2 seconds
-			} catch (InterruptedException e) {
-				Console.severe("Base Thread sleep error");
-				Console.printStackTrace(e);
+		synchronized(this){
+			while (Game.isRunning()){
+				try {
+					this.wait();
+				}
+				catch (InterruptedException e) {
+					Console.severe("Base Thread sleep error");
+					Console.printStackTrace(e);
+				}
 			}
 		}
 		Console.warning("The eMafia Server is no longer running.");
 		//TODO save the log here at program close
 		System.exit(0);
 	}
-
+	/**
+	 * Called after MySQL is initilized to continue with startup.
+	 */
 	public void mysqlReady(){
 		if(program_faults == 0){
 			Server.create();
@@ -51,7 +55,13 @@ public class Base {
 		else{
 			Console.severe("eMafia Server is experiencing errors and cannot continue.");
 		}
-
+	}
+	/**
+	 * Immediatly closes the program
+	 */
+	public synchronized void shutdown(){
+		Game.setGameRunning(false);
+		this.notify();
 	}
 
 	public static void main(String[] args) {
