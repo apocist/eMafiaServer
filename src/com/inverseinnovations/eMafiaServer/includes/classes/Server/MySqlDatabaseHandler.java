@@ -162,6 +162,23 @@ public class MySqlDatabaseHandler extends Thread{
 					if(StringUtils.isNotEmpty(rs.getString("onLynch"))){role.setScript("onLynch", rs.getString("onLynch"));}
 					if(StringUtils.isNotEmpty(rs.getString("onDeath"))){role.setScript("onDeath", rs.getString("onDeath"));}
 					//role.setScript("onRoleBlock?", rs.getString("onRoleBlock?"));
+					if(StringUtils.isNotEmpty(rs.getString("customScript"))){
+						String[] scripts;
+						if(rs.getString("customScript").contains(Constants.CMDVARDIVIDER)){
+							scripts = rs.getString("customScript").split(Constants.CMDVARDIVIDER);
+						}
+						else{
+							scripts = new String[]{rs.getString("customScript")};
+						}
+						String[] eventPlusScript;
+						for(String script : scripts){
+							if(script.contains(Constants.CMDVARSUBDIVIDER)){
+								eventPlusScript = script.split(Constants.CMDVARSUBDIVIDER);
+								role.setScript(eventPlusScript[0], eventPlusScript[1]);
+							}
+						}
+
+					}
 
 					role.targetablesNight1=rs.getInt("targetsN1");
 					role.targetablesNight2=rs.getInt("targetsN2");
@@ -221,7 +238,7 @@ public class MySqlDatabaseHandler extends Thread{
 				ResultSet rs = st.getGeneratedKeys();
 				rs.next();
 				if(newRole){id = rs.getInt(1);}
-				st = con.prepareStatement("UPDATE roles SET setup=?, affiliation=?, cat1=?, cat2=?, onTeam=?, teamName=?, teamWin=?, visibleTeam=?, chatAtNight=?, actionCat=?, targetsN1=?, targetsN2=?, targetsD1=?, targetsD2=? WHERE id = ?");
+				st = con.prepareStatement("UPDATE roles SET setup=?, affiliation=?, cat1=?, cat2=?, onTeam=?, teamName=?, teamWin=?, visibleTeam=?, chatAtNight=?, actionCat=?, targetsN1=?, targetsN2=?, targetsD1=?, targetsD2=?, customScript=NULL WHERE id = ?");
 				st.setString(1, "CUSTOM");
 				st.setString(2, role.affiliation);
 				if(role.category != null){
@@ -265,6 +282,7 @@ public class MySqlDatabaseHandler extends Thread{
 				st.executeUpdate();
 
 				List<String> events = Arrays.asList("onStartup", "onDayStart", "onDayTargetChoice", "onDayEnd", "onNightStart", "onNightTargetChoice", "onNightEnd", "onVisit", "onAttacked", "onLynch", "onDeath", "victoryCon", "mayGameEndCon");
+				LinkedHashMap<String, String> customEvents = new LinkedHashMap<String, String>();
 				for(String event : role.ersScript.keySet()){
 					if(events.contains(event)){
 						if(!role.ersScript.get(event).isEmpty()){
@@ -277,7 +295,23 @@ public class MySqlDatabaseHandler extends Thread{
 						}
 					}
 					else{
-						//TODO save as a custom event
+						if(!role.ersScript.get(event).isEmpty() & !role.ersScript.get(event).equals(" ")){
+							customEvents.put(event,role.ersScript.get(event));
+						}
+					}
+				}
+				String customScriptsString = "";
+				if(!customEvents.isEmpty()){
+					for(String event : customEvents.keySet()){
+						if (customScriptsString != ""){customScriptsString += Constants.CMDVARDIVIDER;}
+						customScriptsString += event+Constants.CMDVARSUBDIVIDER+customEvents.get(event);
+					}
+					if(customScriptsString != ""){
+						st = con.prepareStatement("UPDATE roles SET customScript=? WHERE id = ?");
+						//st.setString(1, event);
+						st.setString(1, customScriptsString);
+						st.setInt(2, id);
+						st.executeUpdate();
 					}
 				}
 				theReturn = true;
