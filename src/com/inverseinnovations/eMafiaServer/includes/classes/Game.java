@@ -56,7 +56,6 @@ public class Game {
 	 */
 	public void addLobby(Lobby l){
 		this.lobbys.put(l.getEID(), l);
-		Base.Console.debug("\""+l.getName()+"\" lobby created");
 	}
 	/**
 	 * Removes the Lobby from Game()

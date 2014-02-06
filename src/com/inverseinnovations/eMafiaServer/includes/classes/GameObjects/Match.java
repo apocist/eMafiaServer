@@ -185,7 +185,6 @@ public class Match extends GameObject{
 		if(characters.containsKey(chara.getEID())){
 			if(chara.getType() != Constants.TYPE_GAMEOB_NPC){//NPC can't be host
 				setSetting("host_id",chara.getEID());
-				Game.Base.Console.debug(chara.getName()+" is the host.");
 				this.send(CmdCompile.chatScreen(chara.getName()+" is the host."));
 			}
 		}
@@ -193,12 +192,9 @@ public class Match extends GameObject{
 	/**Sets the next host avaiable, sets 0 if none found*/
 	public boolean findNewHost(){
 		boolean success = false;
-		//Game.Base.Console.debug("Looking for new host:");
 		for(Character chara : characters.values()){
 			if(getHostId() != chara.getEID()){
-				//Game.Base.Console.debug(chara.getName()+" wasn't the last host!...");
 				if(chara.getType() != Constants.TYPE_GAMEOB_NPC){//NPC can't be host
-					//Game.Base.Console.debug("And they aren't an NPC~!");
 					setHost(chara);
 					success = true;
 					break;
